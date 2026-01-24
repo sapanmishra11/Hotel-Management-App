@@ -1,0 +1,9 @@
+node_modules/
+
+.env
+*/.env
+
+1. User -.txt
+
+.DS_Store
+Thumbs.db

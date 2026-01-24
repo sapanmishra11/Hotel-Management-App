@@ -1,0 +1,86 @@
+@import "../../styles/variables";
+
+.main-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 40px;
+  background: $white;
+  box-shadow: $shadow;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .nav-logo {
+    a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: $primary-blue;
+      text-decoration: none;
+
+      .navbar-logo-image {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        border-radius: 4px;
+      }
+
+      .logo-text {
+        line-height: 1;
+      }
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    a {
+      font-weight: 500;
+      color: $text-dark;
+      text-decoration: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: $primary-blue;
+        transform: translateY(-1px);
+      }
+
+      &.nav-auth-btn {
+        padding: 8px 20px;
+        border-radius: 6px;
+        border: 1.5px solid $primary-blue;
+        color: $primary-blue;
+
+        &.signup {
+          background: $primary-blue;
+          color: $white;
+
+          &:hover {
+            background: darken($primary-blue, 5%);
+            color: $white;
+          }
+        }
+      }
+    }
+
+    .logout-btn {
+      padding: 8px 20px;
+      background: $danger-red;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+
+      &:hover {
+        background: darken($danger-red, 10%);
+      }
+    }
+  }
+}

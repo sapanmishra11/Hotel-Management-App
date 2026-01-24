@@ -1,0 +1,376 @@
+@import "../../styles/variables";
+
+.user-home-container {
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  .image-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: zoom-out;
+
+    .modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      img {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 4px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        object-fit: contain;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: -50px;
+        right: 0;
+        color: white;
+        font-size: 50px;
+        font-weight: 300;
+        cursor: pointer;
+        line-height: 1;
+
+        &:hover {
+          color: #ffb700;
+        }
+      }
+    }
+  }
+
+  .search-banner {
+    background: #003580;
+    padding: 30px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+
+    .search-bar {
+      display: flex;
+      background: #ffb700;
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
+
+      .input-wrapper {
+        flex: 1;
+        background: white;
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        border-radius: 4px;
+
+        input {
+          border: none;
+          outline: none;
+          width: 100%;
+          margin-left: 10px;
+          font-size: 1rem;
+        }
+
+        i {
+          color: #6b7280;
+        }
+
+        &.dates {
+          padding: 5px 12px;
+
+          .date-field {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            .date-label {
+              font-size: 0.7rem;
+              color: #6b7280;
+              font-weight: 700;
+              text-transform: uppercase;
+              margin-bottom: 2px;
+              pointer-events: none;
+            }
+
+            input[type="date"] {
+              border: none;
+              outline: none;
+              font-size: 0.9rem;
+              width: 100%;
+              background: transparent;
+              padding: 0;
+              margin: 0;
+              cursor: pointer;
+              color: #1a1a1a;
+              font-family: inherit;
+            }
+          }
+        }
+      }
+
+      .search-btn {
+        background: #0071c2;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background 0.2s;
+
+        &:hover {
+          background: darken(#0071c2, 5%);
+        }
+      }
+    }
+  }
+
+  .hotel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .hotel-card-horizontal {
+      display: flex;
+      border: 1px solid #e7e7e7;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      transition: box-shadow 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-section {
+        width: 240px;
+        min-width: 240px;
+        position: relative;
+        background: #f3f4f6;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+
+          &.clickable-img {
+            cursor: zoom-in;
+            transition: opacity 0.3s;
+            &:hover {
+              opacity: 0.9;
+            }
+          }
+        }
+
+        .gallery-controls {
+          .gallery-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 2;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+              background: rgba(0, 0, 0, 0.75);
+              padding: 8px 15px;
+            }
+
+            &.prev {
+              left: 0;
+              border-radius: 0 4px 4px 0;
+            }
+
+            &.next {
+              right: 0;
+              border-radius: 4px 0 0 4px;
+            }
+          }
+
+          .image-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(2px);
+          }
+        }
+      }
+
+      .content-section {
+        flex: 2;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+
+        .header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+
+          h3 {
+            color: #0071c2;
+            font-size: 1.25rem;
+            margin: 0;
+          }
+
+          .stars {
+            font-size: 0.8rem;
+            margin-top: 4px;
+          }
+        }
+
+        .rating-badge {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .rating-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+
+            .status {
+              font-weight: 700;
+              color: #1a1a1a;
+              font-size: 0.95rem;
+            }
+
+            .review-count {
+              font-size: 0.75rem;
+              color: #6b7280;
+            }
+          }
+
+          .score {
+            background: #003580;
+            color: white;
+            padding: 6px 8px;
+            border-radius: 6px 6px 6px 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+          }
+        }
+
+        .location-text {
+          font-size: 0.85rem;
+          color: #0071c2;
+          margin: 8px 0;
+          font-weight: 500;
+          text-decoration: underline;
+        }
+
+        .description {
+          font-size: 0.85rem;
+          color: #333;
+          line-height: 1.4;
+          margin-bottom: 10px;
+        }
+
+        .amenities-row {
+          margin-top: auto;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+
+          .amenity-tag {
+            font-size: 0.8rem;
+            color: #008009;
+            font-weight: 700;
+          }
+        }
+      }
+
+      .price-section {
+        width: 200px;
+        min-width: 200px;
+        padding: 15px;
+        border-left: 1px solid #f2f2f2;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+        text-align: right;
+
+        .price-box {
+          margin-bottom: 8px;
+
+          .price-label {
+            display: block;
+            font-size: 0.75rem;
+            color: #4b5563;
+          }
+
+          .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+          }
+
+          small {
+            display: block;
+            font-size: 0.7rem;
+            color: #6b7280;
+          }
+        }
+
+        .action-btn {
+          background: #0071c2;
+          color: white;
+          border: none;
+          padding: 12px 20px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 700;
+          font-size: 1rem;
+          width: 100%;
+          transition: background 0.2s;
+
+          &:hover {
+            background: darken(#0071c2, 8%);
+          }
+        }
+      }
+    }
+  }
+
+  .loader {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2rem;
+    color: #003580;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    background: #f9fafb;
+    border-radius: 8px;
+    color: #4b5563;
+  }
+}

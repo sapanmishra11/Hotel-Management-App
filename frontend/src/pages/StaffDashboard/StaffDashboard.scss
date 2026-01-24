@@ -1,0 +1,80 @@
+@import "../../styles/variables";
+
+.staff-dashboard {
+  padding: 30px;
+  background-color: $bg-light;
+  min-height: 100vh;
+
+  .staff-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid $border-color;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+
+    .live-indicator {
+      color: $success-green;
+      font-weight: bold;
+      font-size: 0.9rem;
+      animation: pulse 2s infinite;
+    }
+  }
+
+  .booking-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+
+    .booking-card {
+      background: $white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: $shadow;
+      border-left: 5px solid $primary-blue;
+
+      &.animate-in {
+        animation: slideIn 0.5s ease-out;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-weight: bold;
+        .price {
+          color: $success-green;
+        }
+      }
+
+      .card-body p {
+        margin: 5px 0;
+        color: $text-dark;
+        font-size: 0.95rem;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

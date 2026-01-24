@@ -1,0 +1,76 @@
+@import "../../styles/variables";
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: $bg-light;
+
+  .auth-card {
+    background: $white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: $shadow;
+    width: 100%;
+    max-width: 450px;
+
+    h2 {
+      text-align: center;
+      color: $text-dark;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+
+      label {
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+        display: block;
+        color: $secondary-color;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        box-sizing: border-box;
+
+        &:focus {
+          border-color: $primary-blue;
+          outline: none;
+        }
+      }
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: $primary-blue;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+
+      &:hover {
+        background-color: darken($primary-blue, 10%);
+      }
+    }
+
+    .auth-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      a {
+        color: $primary-blue;
+        font-weight: bold;
+      }
+    }
+  }
+}

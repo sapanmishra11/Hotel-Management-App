@@ -1,0 +1,99 @@
+@import "../../styles/variables";
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: $bg-light;
+
+  .auth-card {
+    background: $white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: $shadow;
+    width: 100%;
+    max-width: 400px;
+
+    h2 {
+      text-align: center;
+      color: $text-dark;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: $text-dark;
+        font-size: 0.9rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+
+        &:focus {
+          border-color: $primary-blue;
+          box-shadow: 0 0 0 2px rgba($primary-blue, 0.1);
+          outline: none;
+        }
+      }
+
+      select {
+        background-color: $white;
+        cursor: pointer;
+      }
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: $primary-blue;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 10px;
+      transition: background 0.3s;
+
+      &:hover {
+        background-color: darken($primary-blue, 10%);
+      }
+
+      &:disabled {
+        background-color: lighten($primary-blue, 20%);
+        cursor: not-allowed;
+      }
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: lighten($text-dark, 20%);
+
+      a {
+        color: $primary-blue;
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
