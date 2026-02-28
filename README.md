@@ -4,12 +4,15 @@ A full-stack Hotel Management application built with the **PERN stack (PostgreSQ
 
 ## 📸 Gallery
 
+## 📸 Gallery
+
 | | | |
 |:---:|:---:|:---:|
 | ![](screenshots/1%20(1).png) | ![](screenshots/1%20(2).png) | ![](screenshots/1%20(3).png) |
 | ![](screenshots/1%20(4).png) | ![](screenshots/1%20(5).png) | ![](screenshots/1%20(6).png) |
 | ![](screenshots/1%20(7).png) | ![](screenshots/1%20(8).png) | ![](screenshots/1%20(9).png) |
 | ![](screenshots/1%20(10).png) | ![](screenshots/1%20(11).png) | ![](screenshots/1%20(12).png) |
+| ![](screenshots/1%20(13).png) | ![](screenshots/1%20(14).png) | |
 
 ## 🚀 Features
 
