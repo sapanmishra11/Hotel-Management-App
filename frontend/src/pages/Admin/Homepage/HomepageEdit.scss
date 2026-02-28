@@ -1,0 +1,209 @@
+$primary: #2563eb;
+$primary-hover: #1d4ed8;
+$text-main: #1e293b;
+$text-muted: #64748b;
+$border-color: #e2e8f0;
+$bg-card: #ffffff;
+$bg-input: #ffffff;
+$bg-header: #f8f9fa;
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+.admin-container {
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Inter", system-ui, sans-serif;
+
+  .form-header-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+
+    .back-link {
+      background: none;
+      border: none;
+      color: $primary;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+      }
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      display: flex;
+      gap: 0.4rem;
+
+      span {
+        color: #94a3b8;
+      }
+      strong {
+        color: $text-main;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .table-wrapper.boxed-layout {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: $shadow-md;
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: $bg-header;
+      border-bottom: 1px solid $border-color;
+
+      .title-section {
+        h2 {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: $text-main;
+          margin: 0;
+        }
+        p {
+          color: $text-muted;
+          font-size: 0.8rem;
+          margin: 0;
+        }
+      }
+
+      .add-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: $primary;
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover:not(:disabled) {
+          background: $primary-hover;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba($primary, 0.2);
+        }
+      }
+    }
+
+    .form-sections {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+
+      .form-card {
+        .section-title {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: $text-muted;
+          margin-bottom: 1.5rem;
+          border-bottom: 1px solid #f1f5f9;
+          padding-bottom: 0.6rem;
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          font-weight: 700;
+
+          svg {
+            color: $primary;
+          }
+        }
+
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+
+          .full-width {
+            grid-column: span 2;
+          }
+        }
+
+        .input-field {
+          display: flex;
+          flex-direction: column;
+          gap: 0.45rem;
+
+          label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+          }
+
+          input,
+          textarea {
+            padding: 0.7rem 0.85rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: $bg-input;
+            color: $text-main;
+            transition: all 0.2s;
+
+            &:focus {
+              border-color: $primary;
+              outline: none;
+              box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+          }
+
+          .upload-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+
+            input {
+              flex: 1;
+            }
+
+            .upload-trigger {
+              background: $primary;
+              color: white;
+              border: none;
+              padding: 0 1rem;
+              height: 38px;
+              border-radius: 6px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.2s;
+
+              &:hover {
+                background: $primary-hover;
+              }
+
+              svg {
+                color: white;
+                font-size: 0.9rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

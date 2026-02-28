@@ -1,0 +1,34 @@
+.results-container {
+  padding: 0;
+  width: 100%;
+  animation: fadeInList 0.4s ease-out;
+
+  .hotel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 10px;
+
+    .hotel-card-horizontal {
+      width: 100%;
+      max-width: 1100px;
+      box-sizing: border-box;
+    }
+  }
+}
+
+.loader {
+  text-align: center;
+  padding: 100px 0;
+  font-weight: 600;
+  color: #003580;
+}
+
+@media (max-width: 1140px) {
+  .hotel-list {
+    max-width: 95%;
+  }
+}

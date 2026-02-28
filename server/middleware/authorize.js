@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
+const PermissionModel = require("../models/permissionModel");
 
-module.exports = (requiredRoles) => {
-  return (req, res, next) => {
+module.exports = (requiredPermission) => {
+  return async (req, res, next) => {
     const authHeader = req.header("Authorization");
 
     if (!authHeader) {
@@ -10,30 +11,26 @@ module.exports = (requiredRoles) => {
         .json({ message: "Access Denied: No token provided" });
     }
 
-    let token;
-    if (authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-    } else {
-      token = authHeader;
-    }
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : authHeader;
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-
       req.user = decoded;
 
-      if (requiredRoles) {
-        const rolesArray = Array.isArray(requiredRoles)
-          ? requiredRoles
-          : [requiredRoles];
+      if (requiredPermission) {
+        const hasPermission = await PermissionModel.checkUserPermission(
+          req.user.role,
+          requiredPermission,
+        );
 
-        if (!rolesArray.includes(req.user.role)) {
-          return res
-            .status(403)
-            .json({ message: "Access Denied: Insufficient Permissions" });
+        if (!hasPermission) {
+          return res.status(403).json({
+            message: `Access Denied: You do not have the '${requiredPermission}' permission.`,
+          });
         }
       }
-
       next();
     } catch (err) {
       console.error("Auth Middleware Error:", err.message);

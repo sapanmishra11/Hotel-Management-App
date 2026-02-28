@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import API from "../../api/axios";
+import { toast } from "react-toastify";
 import "./Login.scss";
 
 const Login = () => {
@@ -15,32 +16,57 @@ const Login = () => {
       const res = await API.post("api/auth/login", { email, password });
 
       localStorage.setItem("accessToken", res.data.accessToken);
+
       const role = res.data.role || "User";
       localStorage.setItem("role", role);
 
+      if (res.data.allowedPages) {
+        localStorage.setItem(
+          "allowedPages",
+          JSON.stringify(res.data.allowedPages),
+        );
+      } else {
+        localStorage.setItem("allowedPages", JSON.stringify([]));
+      }
+
       const userId = res.data.user_id;
       if (userId) {
-        localStorage.setItem("user_id", userId);
+        localStorage.setItem("userId", userId);
+      }
+
+      const assignedHotelId = res.data.assigned_hotel_id;
+      const assignedHotelName = res.data.assigned_hotel_name;
+
+      if (assignedHotelId) {
+        localStorage.setItem("assigned_hotel_id", assignedHotelId);
+      }
+
+      if (assignedHotelName) {
+        localStorage.setItem("assigned_hotel_name", assignedHotelName);
       }
 
       const queryParams = new URLSearchParams(location.search);
       const redirectTo = queryParams.get("redirect");
 
-      if (redirectTo === "checkout") {
+      const hasPendingBooking = localStorage.getItem("pendingBooking");
+
+      if (redirectTo === "checkout" || hasPendingBooking) {
         window.location.href = "/checkout";
         return;
       }
 
       if (role === "Admin") {
-        window.location.href = "/admin";
+        navigate("/admin");
       } else if (role === "Staff") {
-        window.location.href = "/staff";
+        navigate("/staff");
+      } else if (role === "User") {
+        navigate("/user");
       } else {
-        window.location.href = "/home";
+        navigate("/");
       }
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data || "Invalid Credentials");
+      console.error("Login Error:", err);
+      toast.error(err.response?.data?.error || "Invalid Credentials");
     }
   };
 

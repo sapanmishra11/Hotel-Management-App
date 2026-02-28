@@ -1,0 +1,388 @@
+$brand-blue: #0071c2;
+$brand-dark: #003580;
+$text-main: #1a1a1a;
+$text-muted: #4b5563;
+$text-slate: #64748b;
+$bg-light: #fcfcfc;
+$success-green: #008009;
+$danger-red: #ef4444;
+$border-color: #e2e8f0;
+$radius: 12px;
+
+.hotel-card-horizontal {
+  display: flex;
+  background: white;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  min-height: 240px;
+  overflow: visible !important;
+  transition: box-shadow 0.3s ease;
+  margin-bottom: 25px;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .image-section {
+    width: 320px;
+    min-width: 320px;
+    position: relative;
+    overflow: hidden;
+
+    .discount-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: $danger-red;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 12px;
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .clickable-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+      transition: transform 0.5s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    .gallery-controls {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 12px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+
+      .gallery-btn {
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        &:hover {
+          background: white;
+          color: $brand-blue;
+        }
+      }
+    }
+
+    &:hover .gallery-controls {
+      opacity: 1;
+    }
+  }
+
+  .content-section {
+    flex: 1;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
+
+    .hotel-link {
+      cursor: pointer;
+      color: $brand-blue;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin: 0 0 4px 0;
+      line-height: 1.2;
+
+      &:hover {
+        text-decoration: underline;
+        color: $brand-dark;
+      }
+    }
+
+    .location-text {
+      color: $text-muted;
+      font-size: 14px;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .description-container {
+      flex: 1;
+      .description {
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+
+        &.full-text {
+          display: block;
+          overflow: visible;
+          -webkit-line-clamp: unset;
+        }
+      }
+    }
+
+    .amenities-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 15px;
+      align-items: center;
+      overflow: visible !important;
+
+      .amenity-tag {
+        color: $success-green;
+        font-weight: 700;
+        font-size: 11px;
+        background: #f0fdf4;
+        padding: 4px 10px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        border: 1px solid #dcfce7;
+      }
+
+      .amenities-tooltip-container {
+        position: relative;
+        display: inline-block;
+        z-index: 1100;
+
+        .tooltip-trigger {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+          background: #e2e8f0;
+          border-radius: 50%;
+          font-size: 12px;
+          font-weight: 800;
+          color: #4b5563;
+          cursor: help;
+          transition: all 0.2s;
+
+          &:hover {
+            background: $brand-blue;
+            color: white;
+          }
+        }
+
+        .tooltip-content {
+          visibility: hidden;
+          opacity: 0;
+          position: absolute;
+          bottom: 130%;
+          left: 0;
+          transform: translateY(10px);
+          background: #1e293b;
+          color: white;
+          padding: 12px 16px;
+          border-radius: 8px;
+          width: max-content;
+          min-width: 160px;
+          z-index: 1200;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+          transition: all 0.2s ease-out;
+          pointer-events: none;
+
+          ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            li {
+              font-size: 13px;
+              margin-bottom: 5px;
+              display: flex;
+              align-items: center;
+              white-space: nowrap;
+              &::before {
+                content: "•";
+                margin-right: 8px;
+                color: $brand-blue;
+              }
+            }
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 10px;
+            border: 6px solid transparent;
+            border-top-color: #1e293b;
+          }
+        }
+
+        &:hover .tooltip-content {
+          visibility: visible;
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+
+  .price-section {
+    width: 220px;
+    padding: 24px;
+    border-left: 1px solid #f1f5f9;
+    background: $bg-light;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+
+    .price-container {
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 25px;
+
+      .original-price-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 2px;
+
+        .original-price {
+          font-size: 13px;
+          color: $text-slate;
+          .strikethrough {
+            text-decoration: line-through;
+          }
+        }
+
+        .discount-text {
+          font-size: 12px;
+          font-weight: 700;
+          color: #22c55e;
+        }
+      }
+
+      .offer-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+
+        .label-from {
+          font-size: 14px;
+          font-weight: 700;
+          color: $text-main;
+        }
+
+        .amt {
+          font-size: 26px;
+          font-weight: 900;
+          color: $text-main;
+          letter-spacing: -0.5px;
+          line-height: 1;
+        }
+
+        .unit {
+          font-size: 14px;
+          font-weight: 700;
+          color: $text-main;
+        }
+      }
+    }
+
+    .action-btn {
+      background: #0071c2;
+      color: white;
+      border: none;
+      padding: 12px 0;
+      border-radius: 8px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 15px;
+
+      &:hover {
+        background: #003580;
+      }
+    }
+  }
+
+  &.selection-header-mode {
+    border: none;
+    box-shadow: none;
+    min-height: auto;
+    background: transparent;
+    padding: 0;
+    margin-bottom: 10px;
+    overflow: visible !important;
+
+    .image-section {
+      width: 150px;
+      min-width: 150px;
+      height: 110px;
+      border-radius: $radius;
+      .discount-badge {
+        display: none;
+      }
+    }
+
+    .price-section,
+    .description-container {
+      display: none;
+    }
+
+    .content-section {
+      padding: 0;
+      justify-content: center;
+      overflow: visible !important;
+      .hotel-link {
+        font-size: 2.2rem;
+        pointer-events: none;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    .image-section {
+      width: 100%;
+      min-width: 100%;
+      height: 220px;
+    }
+    .price-section {
+      width: 100%;
+      border-left: none;
+      border-top: 1px solid #f1f5f9;
+      flex-direction: row;
+      align-items: center;
+      padding: 16px 24px;
+      justify-content: space-between;
+      .price-container {
+        margin-bottom: 0;
+        align-items: flex-start;
+      }
+      .action-btn {
+        width: auto;
+        min-width: 150px;
+      }
+    }
+  }
+}

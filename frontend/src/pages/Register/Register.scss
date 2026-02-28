@@ -6,42 +6,66 @@
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background-color: $bg-light;
+  background-color: #f0f2f5;
 
   .auth-card {
-    background: $white;
-    padding: 30px 40px;
+    background: #ffffff;
+    padding: 40px;
     border-radius: 12px;
-    box-shadow: $shadow;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 450px;
+    animation: fadeIn 0.5s ease-out;
 
     h2 {
       text-align: center;
-      color: $text-dark;
-      margin-bottom: 20px;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
 
       label {
-        font-size: 0.85rem;
-        margin-bottom: 5px;
         display: block;
-        color: $secondary-color;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #444;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
-      input,
-      select {
+      input {
         width: 100%;
-        padding: 10px;
-        border: 1px solid $border-color;
-        border-radius: 6px;
+        padding: 12px 16px;
+        border: 1px solid #dcdcdc;
+        border-radius: 8px;
         box-sizing: border-box;
+        font-size: 1rem;
+        color: #333;
+        background-color: #fafafa;
+        transition: all 0.2s ease;
+
+        &::placeholder {
+          color: #aaa;
+        }
 
         &:focus {
-          border-color: $primary-blue;
+          background-color: #fff;
+          border-color: #0071c2;
+          box-shadow: 0 0 0 3px rgba(0, 113, 194, 0.15);
           outline: none;
         }
       }
@@ -49,28 +73,84 @@
 
     button {
       width: 100%;
-      padding: 12px;
-      background-color: $primary-blue;
-      color: white;
+      padding: 14px;
+      background-color: #0071c2;
+      color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 1rem;
       margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 113, 194, 0.2);
 
-      &:hover {
-        background-color: darken($primary-blue, 10%);
+      &:hover:not(:disabled) {
+        background-color: #003580;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(0, 53, 128, 0.25);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        background-color: #a3c7e6;
+        cursor: not-allowed;
+        box-shadow: none;
       }
     }
 
     .auth-footer {
-      margin-top: 20px;
       text-align: center;
-      font-size: 0.9rem;
-      a {
-        color: $primary-blue;
-        font-weight: bold;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 0.95rem;
+      color: #666;
+
+      p {
+        margin: 0;
       }
+
+      a {
+        color: #0071c2;
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 5px;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #003580;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    background-color: #fff;
+    padding: 0;
+
+    .auth-card {
+      padding: 30px 20px;
+      box-shadow: none;
+      border-radius: 0;
+      max-width: 100%;
     }
   }
 }

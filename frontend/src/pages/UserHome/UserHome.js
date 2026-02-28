@@ -1,149 +1,119 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import API from "../../api/axios";
+import { toast } from "react-toastify";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaTimes,
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+} from "react-icons/fa";
+import Homepage from "./Homepage/Homepage";
 import "./UserHome.scss";
 
-const INDIAN_LOCATIONS = {
-  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
-  Delhi: ["New Delhi", "Dwarka", "Rohini"],
-  Karnataka: ["Bangalore", "Mysore", "Mangalore", "Hampi"],
-  Rajasthan: ["Jaipur", "Udaipur", "Jodhpur", "Jaisalmer"],
-  Goa: ["North Goa", "South Goa", "Panjim"],
-  Kerala: ["Kochi", "Munnar", "Alleppey", "Trivandrum"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Ooty"],
-  "Uttar Pradesh": ["Lucknow", "Varanasi", "Agra", "Noida"],
-  Gujarat: ["Ahmedabad", "Surat", "Vadodara"],
-  "West Bengal": ["Kolkata", "Darjeeling", "Siliguri"],
-};
-
-const HotelCard = ({
-  h,
-  handleShowPrices,
-  setSelectedImage,
-  checkIn,
-  checkOut,
-}) => {
-  const [currentImgIndex, setCurrentImgIndex] = useState(0);
-  const serverUrl = "http://localhost:5000";
-
-  const getDynamicPrice = () => {
-    const base = parseFloat(h.base_price);
-    if (checkIn && checkOut) {
-      const start = new Date(checkIn);
-      const end = new Date(checkOut);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      if (diffDays > 1) return base + (diffDays - 1) * 200;
-    }
-    return base;
-  };
-
-  const nextImage = (e) => {
-    e.stopPropagation();
-    if (h.images && h.images.length > 0) {
-      setCurrentImgIndex((prev) => (prev + 1) % h.images.length);
-    }
-  };
-
-  const prevImage = (e) => {
-    e.stopPropagation();
-    if (h.images && h.images.length > 0) {
-      setCurrentImgIndex(
-        (prev) => (prev - 1 + h.images.length) % h.images.length,
-      );
-    }
-  };
-
-  const getImageUrl = (index) => {
-    return h.images && h.images[index]
-      ? `${serverUrl}${h.images[index]}`
-      : "/default-hotel.jpg";
-  };
-
-  return (
-    <div className="hotel-card-horizontal">
-      <div className="image-section">
-        <img
-          src={getImageUrl(currentImgIndex)}
-          alt={h.hotel_name}
-          className="clickable-img"
-          onClick={() => setSelectedImage(getImageUrl(currentImgIndex))}
-        />
-        {h.images && h.images.length > 1 && (
-          <div className="gallery-controls">
-            <button className="gallery-btn prev" onClick={prevImage}>
-              ‹
-            </button>
-            <button className="gallery-btn next" onClick={nextImage}>
-              ›
-            </button>
-            <div className="image-counter">
-              {currentImgIndex + 1} / {h.images.length}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="content-section">
-        <div className="header-row">
-          <div className="title-group">
-            <h3>{h.hotel_name}</h3>
-            <div className="stars">{"⭐".repeat(Math.floor(h.rating))}</div>
-          </div>
-          <div className="rating-badge">
-            <div className="rating-text">
-              <span className="status">Very Good</span>
-              <span className="review-count">285 reviews</span>
-            </div>
-            <span className="score">{h.rating}</span>
-          </div>
-        </div>
-
-        <p className="location-text">
-          {h.city}, {h.state}
-        </p>
-        <p className="description">
-          {h.description || "Located in the heart of the city..."}
-        </p>
-
-        <div className="amenities-row">
-          {h.amenities?.slice(0, 3).map((item) => (
-            <span key={item} className="amenity-tag">
-              ✔ {item}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="price-section">
-        <div className="price-box">
-          <span className="price-label">Price starting at</span>
-          <span className="amount">₹{getDynamicPrice()}</span>
-          <small>+ taxes & fees</small>
-        </div>
-        <button className="action-btn" onClick={() => handleShowPrices(h)}>
-          Book
-        </button>
-      </div>
-    </div>
-  );
-};
-
 const UserHome = () => {
-  const [hotels, setHotels] = useState([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const serverUrl = process.env.REACT_APP_API_URL;
 
+  const [hotels, setHotels] = useState([]);
+  const [locationData, setLocationData] = useState({});
+  const [siteData, setSiteData] = useState(null);
   const [query, setQuery] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [availableCities, setAvailableCities] = useState([]);
 
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [checkIn, setCheckIn] = useState(location.state?.checkInDate || "");
+  const [checkOut, setCheckOut] = useState(location.state?.checkOutDate || "");
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+  const [modalData, setModalData] = useState({
+    images: [],
+    index: 0,
+    isOpen: false,
+  });
+
+  const isExactHome = location.pathname === "/";
+  const isHotelDetailPage = location.pathname.includes("/hotel/");
+  const isManagementPage =
+    location.pathname.includes("/logs") ||
+    location.pathname.includes("/hotels") ||
+    location.pathname.includes("/staff");
+
+  const today = new Date();
+  const minCheckIn = today.toISOString().split("T")[0];
+  const maxLimitDate = new Date();
+  maxLimitDate.setDate(today.getDate() + 15);
+  const maxCheckInLimit = maxLimitDate.toISOString().split("T")[0];
+
+  const getMinCheckOut = () => {
+    if (!checkIn) return minCheckIn;
+    const nextDay = new Date(checkIn);
+    nextDay.setDate(nextDay.getDate() + 1);
+    return nextDay.toISOString().split("T")[0];
+  };
+
+  const getMaxCheckOut = () => {
+    const maxOut = new Date(maxLimitDate);
+    maxOut.setDate(maxOut.getDate() + 1);
+    return maxOut.toISOString().split("T")[0];
+  };
+
+  const handleCheckInChange = (e) => {
+    const newIn = e.target.value;
+    setCheckIn(newIn);
+    if (checkOut && new Date(newIn) >= new Date(checkOut)) {
+      const nextDay = new Date(newIn);
+      nextDay.setDate(nextDay.getDate() + 1);
+      setCheckOut(nextDay.toISOString().split("T")[0]);
+    }
+  };
+
+  const handleCheckOutChange = (e) => {
+    const newOut = e.target.value;
+    if (checkIn && new Date(newOut) <= new Date(checkIn)) {
+      toast.error("Check-Out must be after Check-In");
+      const nextDay = new Date(checkIn);
+      nextDay.setDate(nextDay.getDate() + 1);
+      setCheckOut(nextDay.toISOString().split("T")[0]);
+    } else {
+      setCheckOut(newOut);
+    }
+  };
+
+  useEffect(() => {
+    const fetchSiteInfo = async () => {
+      try {
+        const res = await API.get("/api/globaldetails/details");
+        setSiteData(res.data);
+      } catch (err) {
+        console.error("Error loading site details", err);
+      }
+    };
+    fetchSiteInfo();
+    fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.toString()) {
+      performSearch(params);
+    } else {
+      fetchInitialHotels();
+    }
+  }, [location.search]);
+
+  const fetchLocations = async () => {
+    try {
+      const res = await API.get("api/hotels/locations");
+      setLocationData(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchInitialHotels = async () => {
     setLoading(true);
@@ -151,212 +121,266 @@ const UserHome = () => {
       const res = await API.get("api/hotels/online");
       setHotels(res.data);
     } catch (err) {
-      console.error("Error fetching initial hotels", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    setQuery("");
-    setSelectedState("");
-    setSelectedCity("");
-    setCheckIn("");
-    setCheckOut("");
-    setAvailableCities([]);
-
-    fetchInitialHotels();
-  }, [location.key]);
+  const performSearch = async (params) => {
+    setLoading(true);
+    try {
+      const res = await API.get(`api/hotels/search?${params.toString()}`);
+      setHotels(res.data);
+      setQuery(params.get("query") || "");
+      setSelectedState(params.get("state") || "");
+      setSelectedCity(params.get("city") || "");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleStateChange = (e) => {
     const state = e.target.value;
     setSelectedState(state);
     setSelectedCity("");
-    if (state && INDIAN_LOCATIONS[state]) {
-      setAvailableCities(INDIAN_LOCATIONS[state]);
+    if (state && locationData.stateCityMap?.[state]) {
+      setAvailableCities(locationData.stateCityMap[state]);
     } else {
       setAvailableCities([]);
     }
   };
 
-  const handleSearch = async () => {
-    if ((!checkIn && checkOut) || (checkIn && !checkOut)) {
-      return alert("Please select both check-in and check-out dates");
+  const handleSearchNavigation = () => {
+    if (!checkIn || !checkOut) {
+      return toast.warn("Please select both dates");
     }
+    const params = new URLSearchParams();
+    if (query) params.append("query", query);
+    if (selectedState) params.append("state", selectedState);
+    if (selectedCity) params.append("city", selectedCity);
+    if (checkIn) params.append("checkIn", checkIn);
+    if (checkOut) params.append("checkOut", checkOut);
 
-    if (checkIn && checkOut && new Date(checkIn) >= new Date(checkOut)) {
-      return alert("Check-out date must be after check-in date");
-    }
-
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (query) params.append("query", query);
-      if (selectedState) params.append("state", selectedState);
-      if (selectedCity) params.append("city", selectedCity);
-
-      const res = await API.get(`api/hotels/search?${params.toString()}`);
-      setHotels(res.data);
-    } catch (err) {
-      console.error("Search failed", err);
-    } finally {
-      setLoading(false);
-    }
+    navigate({
+      pathname: "/search",
+      search: `?${params.toString()}`,
+    });
   };
 
-  const handleShowPrices = (hotel) => {
-    if (!checkIn || !checkOut) {
-      return alert("Please select your travel dates first");
-    }
-
-    const token = localStorage.getItem("accessToken");
-
-    const navigationState = {
-      state: {
-        hotel,
-        checkInDate: checkIn,
-        checkOutDate: checkOut,
-      },
-    };
-
-    if (token) {
-      navigate("/checkout", navigationState);
-    } else {
-      localStorage.setItem(
-        "pendingBooking",
-        JSON.stringify({
-          hotel,
-          checkInDate: checkIn,
-          checkOutDate: checkOut,
-        }),
-      );
-      navigate(`/login?redirect=checkout`);
-    }
+  const openModal = (images, index) =>
+    setModalData({ images, index, isOpen: true });
+  const nextModalImage = (e) => {
+    e.stopPropagation();
+    setModalData((prev) => ({
+      ...prev,
+      index: (prev.index + 1) % prev.images.length,
+    }));
+  };
+  const prevModalImage = (e) => {
+    e.stopPropagation();
+    setModalData((prev) => ({
+      ...prev,
+      index: (prev.index - 1 + prev.images.length) % prev.images.length,
+    }));
   };
 
   return (
     <div className="user-home-container">
-      {selectedImage && (
-        <div
-          className="image-modal-overlay"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div className="modal-content">
-            <span className="close-modal">&times;</span>
-            <img src={selectedImage} alt="Hotel Preview" />
+      {!isManagementPage && (
+        <div className="search-banner">
+          <div className="search-bar">
+            <div className="input-wrapper">
+              <label className="date-label">State</label>
+              <select value={selectedState} onChange={handleStateChange}>
+                <option value="">All States</option>
+                {locationData.states?.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="input-wrapper">
+              <label className="date-label">City</label>
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                disabled={!selectedState}
+              >
+                <option value="">
+                  {selectedState ? "All Cities" : "Select State"}
+                </option>
+                {availableCities.map((c) => (
+                  <option key={c.id} value={c.city_name}>
+                    {c.city_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="input-wrapper">
+              <label className="date-label">Hotel Name</label>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <div className="input-wrapper">
+              <label className="date-label">Check-In</label>
+              <input
+                type="date"
+                value={checkIn}
+                min={minCheckIn}
+                max={maxCheckInLimit}
+                onChange={handleCheckInChange}
+              />
+            </div>
+            <div className="input-wrapper">
+              <label className="date-label">Check-Out</label>
+              <input
+                type="date"
+                value={checkOut}
+                min={getMinCheckOut()}
+                max={getMaxCheckOut()}
+                onChange={handleCheckOutChange}
+              />
+            </div>
+            <button className="search-btn" onClick={handleSearchNavigation}>
+              BOOK NOW
+            </button>
           </div>
         </div>
       )}
 
-      <div className="search-banner">
-        <div className="search-bar">
-          <div className="input-wrapper" style={{ flex: 1 }}>
-            <i className="fas fa-map-marker-alt"></i>
-            <select
-              value={selectedState}
-              onChange={handleStateChange}
-              style={{
-                border: "none",
-                outline: "none",
-                width: "100%",
-                background: "transparent",
+      <main className="main-view-port">
+        {isExactHome ? (
+          <Homepage />
+        ) : (
+          <div
+            className={`results-container ${isHotelDetailPage ? "detail-view" : ""}`}
+          >
+            <Outlet
+              context={{
+                openModal,
+                serverUrl,
+                hotels,
+                loading,
+                checkIn,
+                checkOut,
               }}
-            >
-              <option value="">All States</option>
-              {Object.keys(INDIAN_LOCATIONS).map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="input-wrapper" style={{ flex: 1 }}>
-            <i className="fas fa-city"></i>
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              disabled={!selectedState}
-              style={{
-                border: "none",
-                outline: "none",
-                width: "100%",
-                background: "transparent",
-              }}
-            >
-              <option value="">
-                {selectedState ? "All Cities" : "Select State First"}
-              </option>
-              {availableCities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="input-wrapper destination" style={{ flex: 1.5 }}>
-            <i className="fas fa-search"></i>
-            <input
-              type="text"
-              placeholder="Hotel Name"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
+        )}
+      </main>
 
-          <div className="input-wrapper dates">
-            <div className="date-field">
-              <span className="date-label">Check-in</span>
-              <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="input-wrapper dates">
-            <div className="date-field">
-              <span className="date-label">Check-out</span>
-              <input
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <button className="search-btn" onClick={handleSearch}>
-            Search
-          </button>
-        </div>
-      </div>
-
-      <div className="results-container">
-        {loading ? (
-          <div className="loader">Searching for best hotels...</div>
-        ) : (
-          <div className="hotel-list">
-            {hotels.length > 0 ? (
-              hotels.map((h) => (
-                <HotelCard
-                  key={h.id}
-                  h={h}
-                  handleShowPrices={handleShowPrices}
-                  setSelectedImage={setSelectedImage}
-                  checkIn={checkIn}
-                  checkOut={checkOut}
-                />
-              ))
-            ) : (
-              <div className="empty-state">
-                <p>No hotels found. Try a different search.</p>
+      <footer className="global-footer">
+        <div className="footer-container">
+          <div className="footer-top">
+            <div className="footer-col">
+              <h4>SOCIAL MEDIA</h4>
+              <div className="social-links">
+                {siteData?.facebook_url && (
+                  <a
+                    href={siteData.facebook_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FaFacebook />
+                  </a>
+                )}
+                {siteData?.twitter_url && (
+                  <a
+                    href={
+                      siteData.twitter_url.startsWith("http")
+                        ? siteData.twitter_url
+                        : `https://${siteData.twitter_url}`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FaTwitter />
+                  </a>
+                )}
+                {siteData?.instagram_url && (
+                  <a
+                    href={siteData.instagram_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FaInstagram />
+                  </a>
+                )}
               </div>
+            </div>
+
+            <div className="footer-col">
+              <h4>COMPANY</h4>
+              <nav className="footer-nav">
+                <a
+                  href={`mailto:${siteData?.contact_email || "info@hotelpalace.com"}`}
+                >
+                  Contact: {siteData?.contact_email || "info@hotelpalace.com"}
+                </a>
+                <a href={`tel:${siteData?.contact_phone || "01123456789"}`}>
+                  Phone: {siteData?.contact_phone || "011 2345 6789"}
+                </a>
+              </nav>
+            </div>
+
+            <div className="footer-col pricing-guarantee">
+              <div className="guarantee-box">
+                <strong>BEST PRICE GUARANTEE</strong>
+                <p>
+                  Book online or call{" "}
+                  <a href={`tel:${siteData?.contact_phone || "01123456789"}`}>
+                    {siteData?.contact_phone || "011 2345 6789"}
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <p>
+              © 2026 {siteData?.hotel_name || "Hotel Palace"}. All rights
+              reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {modalData.isOpen && (
+        <div
+          className="image-modal-overlay"
+          onClick={() => setModalData({ ...modalData, isOpen: false })}
+        >
+          <button className="close-modal-btn">
+            <FaTimes />
+          </button>
+          <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
+            {modalData.images.length > 1 && (
+              <button className="modal-nav-btn prev" onClick={prevModalImage}>
+                <FaChevronLeft />
+              </button>
+            )}
+            <div className="modal-image-container">
+              <img
+                src={`${serverUrl}${modalData.images[modalData.index]}`}
+                alt="Zoom"
+              />
+            </div>
+            {modalData.images.length > 1 && (
+              <button className="modal-nav-btn next" onClick={nextModalImage}>
+                <FaChevronRight />
+              </button>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,0 +1,262 @@
+$brand-blue: #0071c2;
+$brand-dark: #003580;
+$text-dark: #1a1a1a;
+$text-slate: #475569;
+$border-light: #e2e8f0;
+$bg-sidebar: #f8fafc;
+$radius: 12px;
+$danger-red: #ef4444;
+
+.room-card {
+  display: flex;
+  background: white;
+  border: 1px solid $border-light;
+  border-radius: $radius;
+  margin-bottom: 25px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .room-img-container {
+    width: 350px;
+    min-width: 350px;
+    height: 250px;
+    position: relative;
+    overflow: hidden;
+
+    .discount-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: $danger-red;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 12px;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .room-display-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+      transition: transform 0.5s ease;
+
+      &:hover {
+        transform: scale(1.08);
+      }
+    }
+
+    .room-gallery-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.3) 0%,
+        transparent 40%
+      );
+      pointer-events: none;
+
+      .nav-btn {
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        color: #333;
+        transition: background 0.2s;
+
+        &:hover {
+          background: white;
+          color: $brand-blue;
+        }
+      }
+
+      .img-counter {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  .room-info {
+    flex: 1;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+      font-size: 1.6rem;
+      color: $text-dark;
+      margin: 0 0 12px 0;
+      font-weight: 700;
+    }
+
+    .desc {
+      font-family: "Montserrat", sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: $text-slate;
+      line-height: 1.6;
+      margin: 0;
+
+      &.full-text {
+        display: block;
+      }
+    }
+  }
+
+  .room-action {
+    width: 250px;
+    padding: 25px;
+    background: $bg-sidebar;
+    border-left: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+
+    .price-container {
+      text-align: right;
+
+      .original-price {
+        display: block;
+        font-size: 14px;
+        color: #94a3b8;
+        margin-bottom: 4px;
+
+        .strikethrough {
+          text-decoration: line-through;
+          font-weight: 500;
+        }
+      }
+
+      .offer-price {
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-end;
+        gap: 4px;
+
+        .amt {
+          font-size: 2.2rem;
+          font-weight: 800;
+          color: $text-dark;
+          letter-spacing: -1px;
+        }
+
+        .unit {
+          font-size: 16px;
+          font-weight: 700;
+          color: $text-dark;
+        }
+      }
+
+      .per-night {
+        display: block;
+        font-size: 13px;
+        color: $text-slate;
+        font-weight: 500;
+        margin-top: -2px;
+      }
+    }
+
+    .select-room-btn {
+      width: 100%;
+      background: $brand-blue;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition:
+        background 0.2s,
+        transform 0.1s;
+
+      &:hover {
+        background: $brand-dark;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .room-img-container {
+      width: 300px;
+      min-width: 300px;
+    }
+
+    .room-action {
+      width: 200px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+
+    .room-img-container {
+      width: 100%;
+      min-width: 100%;
+      height: 220px;
+    }
+
+    .room-action {
+      width: 100%;
+      border-left: none;
+      border-top: 1px solid $border-light;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 25px;
+
+      .price-container {
+        text-align: left;
+        .offer-price {
+          justify-content: flex-start;
+        }
+      }
+
+      .select-room-btn {
+        width: auto;
+        min-width: 140px;
+      }
+    }
+  }
+}

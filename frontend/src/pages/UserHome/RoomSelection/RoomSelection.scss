@@ -1,0 +1,112 @@
+$brand-blue: #0071c2;
+$text-dark: #1a1a1a;
+$border-color: #e2e8f0;
+$radius: 12px;
+
+.room-selection-view {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 10px;
+  animation: fadeIn 0.4s ease-out;
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: $brand-blue;
+    cursor: pointer;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .hotel-header-wrapper {
+    margin-bottom: 20px;
+    .hotel-card-horizontal {
+      margin-bottom: 0;
+      .gallery-controls {
+        display: none !important;
+      }
+    }
+  }
+
+  .photo-masonry-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+    height: 480px;
+    margin-bottom: 40px;
+    border-radius: $radius;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+      &:hover {
+        filter: brightness(0.85);
+      }
+    }
+
+    .side-photos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+
+      .side-photo-item {
+        position: relative;
+        .more-photos-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .rooms-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    .grid-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .photo-masonry-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    aspect-ratio: 4/3;
+    .side-photos {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,205 @@
+$primary: #2563eb;
+$primary-hover: #1d4ed8;
+$text-main: #0f172a;
+$text-muted: #64748b;
+$border-color: #e5e7eb;
+$bg-card: #ffffff;
+$bg-header: #f8f9fa;
+$bg-input: #ffffff;
+
+.admin-container {
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  .form-header-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+
+    .back-link {
+      background: none;
+      border: none;
+      color: $primary;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+      }
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      display: flex;
+      gap: 0.4rem;
+
+      span {
+        color: #94a3b8;
+      }
+      strong {
+        color: $text-main;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .table-wrapper.boxed-layout {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
+
+    .table-header {
+      padding: 1.25rem 1.5rem;
+      background: $bg-header;
+      border-bottom: 1px solid $border-color;
+
+      .title-section {
+        h2 {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: $text-main;
+          margin: 0 0 0.2rem 0;
+        }
+        p {
+          color: $text-muted;
+          font-size: 0.8rem;
+          margin: 0;
+        }
+      }
+    }
+
+    .form-sections {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+
+      .form-card {
+        .section-title {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: $text-muted;
+          margin-bottom: 1.5rem;
+          border-bottom: 1px solid #f1f5f9;
+          padding-bottom: 0.6rem;
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          font-weight: 700;
+
+          svg {
+            color: $primary;
+          }
+        }
+
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+
+          .full-width {
+            grid-column: span 2;
+          }
+        }
+
+        .inline-add-row {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+
+          input,
+          select {
+            flex: 1;
+          }
+        }
+
+        .input-field {
+          display: flex;
+          flex-direction: column;
+          gap: 0.45rem;
+
+          label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+          }
+        }
+
+        input,
+        select {
+          width: 100%;
+          padding: 0.7rem 0.85rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          background: $bg-input;
+          color: $text-main;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+          &:focus {
+            border-color: $primary;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+          }
+
+          &:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+            color: #94a3b8;
+          }
+
+          &::placeholder {
+            color: #94a3b8;
+          }
+        }
+
+        .btn-stage {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.7rem 1.5rem;
+          background: $primary;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover:not(:disabled) {
+            background: $primary-hover;
+            box-shadow: 0 4px 12px rgba($primary, 0.15);
+            transform: translateY(-1px);
+          }
+
+          &:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}

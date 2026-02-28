@@ -1,0 +1,90 @@
+.table-wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  .table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+
+    select {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background-color: white;
+      color: #475569;
+    }
+
+    .export-btns {
+      display: flex;
+      gap: 10px;
+
+      .export-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.2s;
+
+        &.excel {
+          background: #dcfce7;
+          color: #166534;
+        }
+        &.pdf {
+          background: #fee2e2;
+          color: #991b1b;
+        }
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    padding: 12px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 13px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+
+  .status-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    text-transform: capitalize;
+
+    &.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    &.checked_in {
+      background: #dcfce7;
+      color: #166534;
+    }
+    &.checked_out {
+      background: #e0f2fe;
+      color: #075985;
+    }
+  }
+}

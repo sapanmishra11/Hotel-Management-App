@@ -1,0 +1,232 @@
+$primary: #2563eb;
+$primary-hover: #1d4ed8;
+$text-main: #0f172a;
+$text-muted: #64748b;
+$bg-body: #f1f5f9;
+$border-color: #dee2e6;
+$white: #ffffff;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+.admin-container {
+  padding: 2.5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Inter", system-ui, sans-serif;
+
+  .table-wrapper.boxed-layout {
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    .table-header {
+      @include flex-center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: #f8f9fa;
+      border-bottom: 1px solid $border-color;
+
+      .title-section {
+        h2 {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: $text-main;
+          margin: 0 0 0.25rem 0;
+          letter-spacing: -0.01em;
+        }
+        p {
+          color: $text-muted;
+          font-size: 0.85rem;
+          margin: 0;
+        }
+      }
+
+      .add-btn {
+        @include flex-center;
+        gap: 0.5rem;
+        background: $primary;
+        color: $white;
+        padding: 0.6rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba($primary, 0.2);
+
+        &:hover {
+          background: $primary-hover;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 6px rgba($primary, 0.3);
+        }
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background: $white;
+
+        th {
+          padding: 0.75rem 1rem;
+          text-align: left;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #212529;
+          text-transform: uppercase;
+          border: 1px solid $border-color;
+        }
+      }
+
+      tbody tr {
+        &:nth-of-type(even) {
+          background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        &:hover {
+          background: #f1f5f9;
+        }
+
+        td {
+          padding: 0.75rem 1rem;
+          color: #495057;
+          font-size: 0.875rem;
+          vertical-align: middle;
+          border: 1px solid $border-color;
+
+          .hotel-cell {
+            .hotel-name {
+              display: block;
+              font-weight: 600;
+              color: $text-main;
+            }
+            .hotel-id {
+              font-size: 0.75rem;
+              color: $text-muted;
+              font-family: "JetBrains Mono", monospace;
+            }
+          }
+
+          .price-tag {
+            font-weight: 700;
+            color: $text-main;
+          }
+
+          .status-badge {
+            display: inline-flex;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+
+            &.online {
+              background: #dcfce7;
+              color: #166534;
+            }
+            &.offline {
+              background: #fee2e2;
+              color: #991b1b;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 600;
+}
+.text-center {
+  text-align: center !important;
+}
+
+.action-group {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+
+  button {
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: #f1f5f9;
+
+    &.edit-btn {
+      color: $primary;
+      &:hover {
+        background: #dbeafe;
+        border-color: #bfdbfe;
+      }
+    }
+    &.delete-btn {
+      color: #ef4444;
+      &:hover {
+        background: #fee2e2;
+        border-color: #fecaca;
+      }
+    }
+  }
+}
+
+.pagination-footer {
+  @include flex-center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: $white;
+  border: 1px solid $border-color;
+  border-top: none;
+
+  .entries-info {
+    font-size: 0.85rem;
+    color: $text-muted;
+    span {
+      font-weight: 600;
+      color: $text-main;
+    }
+  }
+
+  .pagination-controls {
+    display: flex;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    overflow: hidden;
+
+    button {
+      padding: 0.5rem 0.85rem;
+      border: none;
+      background: $white;
+      border-right: 1px solid $border-color;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: $primary;
+      cursor: pointer;
+
+      &:last-child {
+        border-right: none;
+      }
+      &:hover:not(:disabled) {
+        background: #f8f9fa;
+      }
+      &:disabled {
+        color: #cbd5e1;
+        cursor: not-allowed;
+      }
+      &.active {
+        background: $primary;
+        color: $white;
+      }
+    }
+  }
+}
