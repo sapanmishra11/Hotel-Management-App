@@ -15,10 +15,15 @@ A full-stack Hotel Management application built with the **PERN stack (PostgreSQ
 ## 🚀 Features
 
 • Developed a scalable hotel booking platform with **Role-Based Access Control** to manage **Admin, Staff, and User**, utilizing **JWT** (Access/Refresh tokens) and **Bcrypt** for secure authentication.
+
 • Developed an **Admin Panel** featuring full **CRUD capabilities** for hotels, empowered admins to manage **page-level access** and generate sales analytics with **PDF and Excel** reports for hotel bookings.
+
 • Developed a specialized **Staff Panel** for assigned hotel booking management, integrated **Socket.io** to establish low latency, real-time communication for instant **staff notifications** regarding live booking updates.
+
 • Automated financial workflows by implementing a **precision billing system** with dynamic GST calculations.
+
 • Integrated **Nodemailer** to trigger **automated email** for PDF invoice generation upon checkout and facilitating user registration, user password setup, and staff credential configuration.
+
 • Optimized system performance by implementing **Server-Side Pagination** and **URL Query Parameters** to fetch data in chunks and maintain state persistence across page refreshes, significantly reduced API response times and frontend memory overhead by minimizing data transfer and client-side processing.
 
 ## 🛠️ Tech Stack
