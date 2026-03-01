@@ -60,34 +60,72 @@ const DishManager = () => {
     }
   };
 
-  const downloadExcel = () => {
-    const dataToExport = dishes.map((dish) => ({
-      ID: dish.id,
-      Dish_Name: dish.dish_name,
-      Dietary_Type: dish.dietary_type,
-      Status: dish.status,
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Global_Dishes");
-    XLSX.writeFile(
-      workbook,
-      `Dish_Catalog_Page_${pagination.currentPage}.xlsx`,
-    );
+  const fetchFullReportData = async () => {
+    try {
+      const res = await API.get("api/hotels/global-dishes/report");
+      if (res.data.success) {
+        return res.data.dishes;
+      }
+      return [];
+    } catch (err) {
+      console.error("Error fetching full report:", err);
+      toast.error("Failed to fetch complete dish list");
+      return null;
+    }
   };
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Global Dish Directory - Page ${pagination.currentPage}`, 14, 15);
-    const tableColumn = ["ID", "Dish Name", "Dietary Type", "Status"];
-    const tableRows = dishes.map((dish) => [
-      dish.id,
-      dish.dish_name,
-      dish.dietary_type,
-      dish.status,
-    ]);
-    autoTable(doc, { head: [tableColumn], body: tableRows, startY: 20 });
-    doc.save(`Dish_Catalog_Page_${pagination.currentPage}.pdf`);
+  const downloadExcel = async () => {
+    setIsProcessing(true);
+    const fullDishes = await fetchFullReportData();
+
+    if (fullDishes && fullDishes.length > 0) {
+      const dataToExport = fullDishes.map((dish, index) => ({
+        "S.No": index + 1,
+        ID: dish.id,
+        Dish_Name: dish.dish_name,
+        Dietary_Type: dish.dietary_type,
+        Status: dish.status,
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Global_Dishes");
+      XLSX.writeFile(workbook, `Full_Dish_Catalog_Report.xlsx`);
+    } else if (fullDishes) {
+      toast.info("No records found to export.");
+    }
+    setIsProcessing(false);
+  };
+
+  const downloadPDF = async () => {
+    setIsProcessing(true);
+    const fullDishes = await fetchFullReportData();
+
+    if (fullDishes && fullDishes.length > 0) {
+      const doc = new jsPDF();
+      doc.text(`Full Global Dish Directory Report`, 14, 15);
+
+      const tableColumn = ["#", "ID", "Dish Name", "Dietary Type", "Status"];
+      const tableRows = fullDishes.map((dish, index) => [
+        index + 1,
+        dish.id,
+        dish.dish_name,
+        dish.dietary_type,
+        dish.status,
+      ]);
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 20,
+        theme: "striped",
+      });
+
+      doc.save(`Full_Dish_Catalog_Report.pdf`);
+    } else if (fullDishes) {
+      toast.info("No records found to export.");
+    }
+    setIsProcessing(false);
   };
 
   const handlePageClick = (pageNum) => {
@@ -123,26 +161,32 @@ const DishManager = () => {
             <button
               onClick={downloadExcel}
               className="add-btn"
+              disabled={isProcessing}
               style={{
                 backgroundColor: "#10b981",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? "not-allowed" : "pointer",
               }}
             >
-              <FaFileExcel size={16} /> Excel
+              <FaFileExcel size={16} /> {isProcessing ? "Fetching..." : "Excel"}
             </button>
             <button
               onClick={downloadPDF}
               className="add-btn"
+              disabled={isProcessing}
               style={{
                 backgroundColor: "#ef4444",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? "not-allowed" : "pointer",
               }}
             >
-              <FaFilePdf size={16} /> PDF
+              <FaFilePdf size={16} /> {isProcessing ? "Fetching..." : "PDF"}
             </button>
             <button
               onClick={() => navigate(`${basePath}/hotels/dishes/add`)}

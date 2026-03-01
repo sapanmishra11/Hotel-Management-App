@@ -35,8 +35,13 @@ const SetPassword = () => {
       toast.success("Password set successfully! You can now login.");
       navigate("/login");
     } catch (err) {
+      const serverMessage =
+        typeof err.response?.data === "string"
+          ? err.response.data
+          : err.response?.data?.message;
+
       const errorMsg =
-        err.response?.data?.message || "Link expired or invalid.";
+        serverMessage || "An unexpected error occurred. Please try again.";
       toast.error(errorMsg);
     } finally {
       setLoading(false);

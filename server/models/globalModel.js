@@ -68,4 +68,11 @@ const updateGlobalDetails = async (data) => {
   return result.rows[0];
 };
 
-module.exports = { getGlobalDetails, updateGlobalDetails };
+const getHotelName = async () => {
+  const result = await pool.query(
+    "SELECT hotel_name FROM global_hotel_details LIMIT 1",
+  );
+  return result.rows[0];
+};
+
+module.exports = { getGlobalDetails, updateGlobalDetails, getHotelName };

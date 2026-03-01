@@ -320,13 +320,11 @@ const UserHome = () => {
             <div className="footer-col">
               <h4>COMPANY</h4>
               <nav className="footer-nav">
-                <a
-                  href={`mailto:${siteData?.contact_email || "info@hotelpalace.com"}`}
-                >
-                  Contact: {siteData?.contact_email || "info@hotelpalace.com"}
+                <a href={`mailto:${siteData?.contact_email}`}>
+                  Contact: {siteData?.contact_email}
                 </a>
-                <a href={`tel:${siteData?.contact_phone || "01123456789"}`}>
-                  Phone: {siteData?.contact_phone || "011 2345 6789"}
+                <a href={`tel:${siteData?.contact_phone}`}>
+                  Phone: {siteData?.contact_phone}
                 </a>
               </nav>
             </div>
@@ -336,8 +334,8 @@ const UserHome = () => {
                 <strong>BEST PRICE GUARANTEE</strong>
                 <p>
                   Book online or call{" "}
-                  <a href={`tel:${siteData?.contact_phone || "01123456789"}`}>
-                    {siteData?.contact_phone || "011 2345 6789"}
+                  <a href={`tel:${siteData?.contact_phone}`}>
+                    {siteData?.contact_phone}
                   </a>
                 </p>
               </div>
@@ -345,10 +343,7 @@ const UserHome = () => {
           </div>
 
           <div className="footer-bottom">
-            <p>
-              © 2026 {siteData?.hotel_name || "Hotel Palace"}. All rights
-              reserved.
-            </p>
+            <p>© 2026 {siteData?.hotel_name}. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -57,31 +57,72 @@ const LocationManager = () => {
     }
   };
 
-  const downloadExcel = () => {
-    const dataToExport = locations.map((loc) => ({
-      Country: loc.country_name,
-      State: loc.state_name,
-      City_Area: loc.city_name,
-      Status: loc.status,
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Locations");
-    XLSX.writeFile(workbook, `Locations_Page_${pagination.currentPage}.xlsx`);
+  const fetchFullReportData = async () => {
+    try {
+      const res = await API.get("api/hotels/locations/report");
+      if (res.data.success) {
+        return res.data.locations;
+      }
+      return [];
+    } catch (err) {
+      console.error("Error fetching full report:", err);
+      toast.error("Failed to fetch complete location list");
+      return null;
+    }
   };
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Location Directory - Page ${pagination.currentPage}`, 14, 15);
-    const tableColumn = ["Country", "State", "City / Area", "Status"];
-    const tableRows = locations.map((loc) => [
-      loc.country_name,
-      loc.state_name,
-      loc.city_name,
-      loc.status,
-    ]);
-    autoTable(doc, { head: [tableColumn], body: tableRows, startY: 20 });
-    doc.save(`Locations_Page_${pagination.currentPage}.pdf`);
+  const downloadExcel = async () => {
+    setIsProcessing(true);
+    const fullLocations = await fetchFullReportData();
+
+    if (fullLocations && fullLocations.length > 0) {
+      const dataToExport = fullLocations.map((loc, index) => ({
+        "S.No": index + 1,
+        Country: loc.country_name,
+        State: loc.state_name,
+        City_Area: loc.city_name,
+        Status: loc.city_status || loc.status,
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Locations");
+      XLSX.writeFile(workbook, `Full_Location_Directory_Report.xlsx`);
+    } else if (fullLocations) {
+      toast.info("No records found to export.");
+    }
+    setIsProcessing(false);
+  };
+
+  const downloadPDF = async () => {
+    setIsProcessing(true);
+    const fullLocations = await fetchFullReportData();
+
+    if (fullLocations && fullLocations.length > 0) {
+      const doc = new jsPDF();
+      doc.text(`Full Location Directory Report`, 14, 15);
+
+      const tableColumn = ["#", "Country", "State", "City / Area", "Status"];
+      const tableRows = fullLocations.map((loc, index) => [
+        index + 1,
+        loc.country_name,
+        loc.state_name,
+        loc.city_name,
+        loc.city_status || loc.status,
+      ]);
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 20,
+        theme: "striped",
+      });
+
+      doc.save(`Full_Location_Directory_Report.pdf`);
+    } else if (fullLocations) {
+      toast.info("No records found to export.");
+    }
+    setIsProcessing(false);
   };
 
   const handlePageClick = (pageNum) => {
@@ -118,26 +159,32 @@ const LocationManager = () => {
             <button
               onClick={downloadExcel}
               className="add-btn"
+              disabled={isProcessing}
               style={{
                 backgroundColor: "#10b981",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? "not-allowed" : "pointer",
               }}
             >
-              <FaFileExcel size={16} /> Excel
+              <FaFileExcel size={16} /> {isProcessing ? "Fetching..." : "Excel"}
             </button>
             <button
               onClick={downloadPDF}
               className="add-btn"
+              disabled={isProcessing}
               style={{
                 backgroundColor: "#ef4444",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? "not-allowed" : "pointer",
               }}
             >
-              <FaFilePdf size={16} /> PDF
+              <FaFilePdf size={16} /> {isProcessing ? "Fetching..." : "PDF"}
             </button>
             <button
               onClick={() => navigate(`${basePath}/hotels/locations/add`)}

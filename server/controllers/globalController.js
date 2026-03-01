@@ -20,4 +20,19 @@ const editGlobalDetails = async (req, res) => {
   }
 };
 
-module.exports = { fetchGlobalDetails, editGlobalDetails };
+const hotelModel = require("../models/globalModel");
+
+const fetchHotelName = async (req, res) => {
+  try {
+    const data = await hotelModel.getHotelName();
+    res.status(200).json({
+      success: true,
+      hotelName: data ? data.hotel_name : "Hotel Palace",
+    });
+  } catch (err) {
+    console.error("Error fetching branding:", err.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+module.exports = { fetchGlobalDetails, editGlobalDetails, fetchHotelName };

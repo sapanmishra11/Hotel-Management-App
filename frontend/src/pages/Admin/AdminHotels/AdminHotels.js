@@ -54,37 +54,78 @@ const HotelAdminList = () => {
     fetchHotels(pagination.currentPage);
   }, [pagination.currentPage]);
 
-  const downloadExcel = () => {
-    const dataToExport = hotels.map((hotel) => ({
-      ID: hotel.id,
-      Hotel_Name: hotel.hotel_name,
-      City: hotel.city,
-      State: hotel.state,
-      Base_Price: `Rs. ${hotel.base_price}`,
-      Status: hotel.availability_status,
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Hotels");
-    XLSX.writeFile(
-      workbook,
-      `Hotel_Inventory_Report_Page_${pagination.currentPage}.xlsx`,
-    );
+  const downloadExcel = async () => {
+    setIsProcessing(true);
+    try {
+      const res = await API.get(`/api/hotels/hotelreport`);
+      const fullData = res.data.success ? res.data.hotels : [];
+
+      if (fullData.length === 0) {
+        toast.info("No records found to export.");
+        return;
+      }
+
+      const dataToExport = fullData.map((hotel, index) => ({
+        "S.No": index + 1,
+        ID: hotel.id,
+        Hotel_Name: hotel.hotel_name,
+        City: hotel.city,
+        State: hotel.state,
+        Base_Price: `Rs. ${hotel.base_price}`,
+        Status: hotel.availability_status,
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Hotels");
+      XLSX.writeFile(workbook, `Full_Hotel_Inventory.xlsx`);
+    } catch (err) {
+      console.error("Export error:", err);
+      toast.error("Failed to generate Excel.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Hotel List Report - Page ${pagination.currentPage}`, 14, 15);
-    const tableColumn = ["ID", "Hotel Name", "Location", "Price", "Status"];
-    const tableRows = hotels.map((h) => [
-      h.id,
-      h.hotel_name,
-      `${h.city}, ${h.state}`,
-      `Rs. ${h.base_price}`,
-      h.availability_status,
-    ]);
-    autoTable(doc, { head: [tableColumn], body: tableRows, startY: 20 });
-    doc.save(`Hotel_Inventory_Report_Page_${pagination.currentPage}.pdf`);
+  const downloadPDF = async () => {
+    setIsProcessing(true);
+    try {
+      const res = await API.get(`/api/hotels/hotelreport`);
+      const fullData = res.data.success ? res.data.hotels : [];
+
+      if (fullData.length === 0) {
+        toast.info("No records found to export.");
+        return;
+      }
+
+      const doc = new jsPDF();
+      doc.text(`Full Hotel Inventory`, 14, 15);
+
+      const tableColumn = [
+        "#",
+        "ID",
+        "Hotel Name",
+        "Location",
+        "Price",
+        "Status",
+      ];
+      const tableRows = fullData.map((h, index) => [
+        index + 1,
+        h.id,
+        h.hotel_name,
+        `${h.city}, ${h.state}`,
+        `Rs. ${h.base_price}`,
+        h.availability_status,
+      ]);
+
+      autoTable(doc, { head: [tableColumn], body: tableRows, startY: 20 });
+      doc.save(`Full_Hotel_Inventory.pdf`);
+    } catch (err) {
+      console.error("Export error:", err);
+      toast.error("Failed to generate PDF.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handlePageClick = (pageNum) => {
@@ -118,26 +159,33 @@ const HotelAdminList = () => {
             <button
               onClick={downloadExcel}
               className="add-btn"
+              disabled={isProcessing}
               style={{
                 backgroundColor: "#10b981",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? "not-allowed" : "pointer",
               }}
             >
-              <FaFileExcel size={16} /> Excel
+              <FaFileExcel size={16} />{" "}
+              {isProcessing ? "Exporting..." : "Excel"}
             </button>
             <button
               onClick={downloadPDF}
               className="add-btn"
+              disabled={isProcessing}
               style={{
                 backgroundColor: "#ef4444",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? "not-allowed" : "pointer",
               }}
             >
-              <FaFilePdf size={16} /> PDF
+              <FaFilePdf size={16} /> {isProcessing ? "Exporting..." : "PDF"}
             </button>
             <button
               onClick={() => navigate(`${basePath}/hotels/add`)}

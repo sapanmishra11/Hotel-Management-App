@@ -99,6 +99,7 @@ const Checkout = () => {
     const bookingData = {
       user_id: parseInt(userId),
       hotel_id: parseInt(hotel.id),
+      hotel_name: hotel.hotel_name,
       room_type: roomType,
       check_in_date: checkInDate,
       check_out_date: checkOutDate,

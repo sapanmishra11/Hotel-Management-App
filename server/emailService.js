@@ -20,10 +20,7 @@ const generateInvoiceBuffer = (bookingDetails, mealData) => {
     doc.on("end", () => resolve(Buffer.concat(buffers)));
     doc.on("error", reject);
 
-    const currentHotelName =
-      bookingDetails.hotel_name ||
-      bookingDetails.hotelName ||
-      "Hotel Palace Mumbai International Airport";
+    const currentHotelName = bookingDetails.hotel_name || "Hotel Palace";
 
     doc
       .fillColor("#003580")
@@ -111,10 +108,7 @@ const generateInvoiceBuffer = (bookingDetails, mealData) => {
 
 const sendInvoice = async (userEmail, bookingDetails) => {
   try {
-    const currentHotelName =
-      bookingDetails.hotel_name ||
-      bookingDetails.hotelName ||
-      "Hotel Palace Mumbai International Airport";
+    const currentHotelName = bookingDetails.hotel_name || "Hotel Palace";
 
     let mealData = bookingDetails.meals;
     if (typeof mealData === "string") {

@@ -83,7 +83,11 @@ const createHotel = async (req, res) => {
 const searchHotels = async (req, res) => {
   try {
     const { query, state, city } = req.query;
-    const hotels = await hotelModel.searchHotels(query, state, city);
+    const hotels = await hotelModel.searchHotelsButOnlineCities(
+      query,
+      state,
+      city,
+    );
     res.json(hotels);
   } catch (err) {
     console.error(err);
@@ -108,6 +112,24 @@ const fetchAllHotels = async (req, res) => {
   } catch (err) {
     console.error("Fetch All Hotels Error:", err);
     res.status(500).json("Error fetching hotels");
+  }
+};
+
+const getHotelReport = async (req, res) => {
+  try {
+    const hotels = await hotelModel.getHotelsForExport();
+
+    res.status(200).json({
+      success: true,
+      hotels: hotels,
+    });
+  } catch (err) {
+    console.error("Controller Error (getHotelReport):", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: err.message,
+    });
   }
 };
 
@@ -199,7 +221,7 @@ const deleteLocation = async (req, res) => {
 
 const fetchLocations = async (req, res) => {
   try {
-    const rawRows = await hotelModel.getLocations();
+    const rawRows = await hotelModel.getAllLocationsButOnlineCities();
 
     const countries = new Set();
     const states = new Set();
@@ -255,9 +277,43 @@ const fetchLocations = async (req, res) => {
   }
 };
 
+const getLocationReport = async (req, res) => {
+  try {
+    const locations = await hotelModel.getFullLocationReport();
+
+    res.status(200).json({
+      success: true,
+      locations: locations,
+    });
+  } catch (err) {
+    console.error("Location Report Controller Error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+const getGlobalDishReport = async (req, res) => {
+  try {
+    const dishes = await hotelModel.getFullGlobalDishReport();
+
+    res.status(200).json({
+      success: true,
+      dishes: dishes,
+    });
+  } catch (err) {
+    console.error("Dish Report Error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 const fetchGlobalDishes = async (req, res) => {
   try {
-    const dishes = await hotelModel.getGlobalDishes();
+    const dishes = await hotelModel.getActiveGlobalDishes();
     res.json(dishes);
   } catch (err) {
     console.error(err.message);
@@ -601,34 +657,37 @@ const fetchStaffPaginated = async (req, res) => {
 };
 
 module.exports = {
-  fetchRoomMeals,
-  createRoomMeal,
-  removeRoomMeal,
   createHotel,
   searchHotels,
   fetchOnlineHotels,
+  fetchOnlineHotelsPaginated,
   fetchAllHotels,
+  getHotelReport,
   fetchHotelById,
   updateStatus,
   updateHotel,
-  addLocation,
+  createHotelRoom,
+  updateHotelRoom,
   fetchLocations,
-  fetchGlobalDishes,
-  createGlobalDish,
-  removeGlobalDish,
+  getLocationReport,
+  addLocation,
+  deleteLocation,
+  getHotels,
+  toggleCityStatus,
   fetchHotelMeals,
   createHotelMeal,
   removeHotelMeal,
-  createHotelRoom,
-  updateHotelRoom,
-  deleteLocation,
-  getHotels,
-  toggleGlobalDishStatus,
-  toggleCityStatus,
-  fetchOnlineHotelsPaginated,
+  fetchRoomMeals,
+  createRoomMeal,
+  removeRoomMeal,
   fetchLocationsPaginated,
-  fetchGlobalDishesPaginated,
   fetchStaffPaginated,
   fetchStaffById,
   updateStaff,
+  getGlobalDishReport,
+  fetchGlobalDishes,
+  toggleGlobalDishStatus,
+  createGlobalDish,
+  removeGlobalDish,
+  fetchGlobalDishesPaginated,
 };

@@ -92,7 +92,12 @@ const createBookingTransaction = async (bookingDetails) => {
     const email = userResult.rows.length > 0 ? userResult.rows[0].email : null;
 
     await client.query("COMMIT");
-    return { bookingData, email };
+    const finalBookingData = {
+      ...bookingData,
+      hotel_name: bookingDetails.hotel_name,
+      roomType: bookingDetails.room_type,
+    };
+    return { bookingData: finalBookingData, email };
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;

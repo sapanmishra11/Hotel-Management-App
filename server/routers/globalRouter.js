@@ -29,4 +29,6 @@ router.post(
   },
 );
 
+router.get("/hotelname", globalController.fetchHotelName);
+
 module.exports = router;

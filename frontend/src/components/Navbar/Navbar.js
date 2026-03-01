@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import API from "../../api/axios";
 import "./Navbar.scss";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const [hotelName, setHotelName] = useState("");
 
   const role = localStorage.getItem("role");
   const userId = localStorage.getItem("userId");
@@ -20,6 +22,20 @@ const Navbar = () => {
 
   const userRole = role ? role.toLowerCase() : "user";
 
+  useEffect(() => {
+    const fetchBranding = async () => {
+      try {
+        const res = await API.get("/api/globaldetails/hotelname");
+        if (res.data && res.data.success) {
+          setHotelName(res.data.hotelName);
+        }
+      } catch (err) {
+        console.error("Error fetching branding for navbar:", err);
+      }
+    };
+    fetchBranding();
+  }, []);
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/login";
@@ -28,9 +44,8 @@ const Navbar = () => {
   return (
     <nav className="main-navbar">
       <div className="nav-logo">
-        {/* Updated to always go to "/" path */}
         <Link to="/">
-          <span className="logo-text">Hotel Palace</span>
+          <span className="logo-text">{hotelName}</span>
         </Link>
       </div>
 
@@ -47,7 +62,6 @@ const Navbar = () => {
           </>
         ) : (
           <div className="nav-authenticated">
-            {/* ADMIN PANEL BUTTON - Hardcoded for Admin Role */}
             {role === "Admin" && (
               <Link to="/admin/role-access" className="nav-link-item">
                 Admin Panel

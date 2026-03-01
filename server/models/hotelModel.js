@@ -77,7 +77,7 @@ const addHotelTransaction = async (hotelData) => {
   }
 };
 
-const searchHotels = async (query, state, city) => {
+const searchHotelsButOnlineCities = async (query, state, city) => {
   let sql = `
     SELECT h.*, 
       COALESCE(json_agg(DISTINCT hi.image_url) FILTER (WHERE hi.image_url IS NOT NULL), '[]') as images_from_table,
@@ -85,7 +85,10 @@ const searchHotels = async (query, state, city) => {
     FROM hotels h 
     LEFT JOIN hotel_images hi ON h.id = hi.hotel_id 
     LEFT JOIN hotel_rooms r ON h.id = r.hotel_id
-    WHERE h.availability_status = 'online'
+    -- Join with cities to check the city status
+    INNER JOIN cities c ON h.city = c.city_name 
+    WHERE h.availability_status = 'online' 
+      AND c.status = 'active'
   `;
   const params = [];
 
@@ -146,6 +149,16 @@ const getAllHotels = async () => {
     LEFT JOIN hotel_images hi ON h.id = hi.hotel_id 
     LEFT JOIN hotel_rooms r ON h.id = r.hotel_id
     GROUP BY h.id ORDER BY h.id ASC`;
+  const result = await pool.query(query);
+  return result.rows;
+};
+
+const getHotelsForExport = async () => {
+  const query = `
+    SELECT id, hotel_name, city, state, base_price, availability_status 
+    FROM hotels 
+    ORDER BY id DESC
+  `;
   const result = await pool.query(query);
   return result.rows;
 };
@@ -341,7 +354,7 @@ const getOnlineHotelsCount = async () => {
   return parseInt(result.rows[0].count);
 };
 
-const getLocations = async () => {
+const getAllLocationsButOnlineCities = async () => {
   const result = await pool.query(
     `SELECT 
         co.country_name, 
@@ -350,16 +363,43 @@ const getLocations = async () => {
         c.city_name, 
         c.status as city_status
      FROM countries co
-     FULL OUTER JOIN states s ON co.id = s.country_id
-     FULL OUTER JOIN cities c ON s.id = c.state_id
-     ORDER BY co.country_name, s.state_name, c.city_name`,
+     LEFT JOIN states s ON co.id = s.country_id
+     LEFT JOIN cities c ON s.id = c.state_id AND c.status = 'active'
+     ORDER BY co.country_name ASC, s.state_name ASC, c.city_name ASC`,
   );
   return result.rows;
 };
 
-const getGlobalDishes = async () => {
+const getFullLocationReport = async () => {
+  const query = `
+    SELECT 
+      co.country_name, 
+      s.state_name, 
+      c.id as city_id,   
+      c.city_name, 
+      c.status as city_status
+    FROM countries co
+    JOIN states s ON co.id = s.country_id
+    JOIN cities c ON s.id = c.state_id
+    ORDER BY co.country_name ASC, s.state_name ASC, c.city_name ASC
+  `;
+  const result = await pool.query(query);
+  return result.rows;
+};
+
+const getFullGlobalDishReport = async () => {
+  const query = `
+    SELECT id, dish_name, dietary_type, status 
+    FROM global_dishes 
+    ORDER BY dish_name ASC
+  `;
+  const result = await pool.query(query);
+  return result.rows;
+};
+
+const getActiveGlobalDishes = async () => {
   const result = await pool.query(
-    "SELECT * FROM global_dishes ORDER BY dietary_type, dish_name",
+    "SELECT * FROM global_dishes WHERE status = 'active' ORDER BY dietary_type, dish_name",
   );
   return result.rows;
 };
@@ -539,15 +579,10 @@ const getStaffCount = async () => {
 };
 
 module.exports = {
-  getRoomMeals,
-  addRoomMeal,
-  deleteRoomMeal,
-  getHotelMeals,
-  addHotelMeal,
-  deleteHotelMeal,
-  searchHotels,
+  searchHotelsButOnlineCities,
   getOnlineHotels,
   getAllHotels,
+  getHotelsForExport,
   getHotelById,
   getPaginatedHotels,
   getHotelsCount,
@@ -556,20 +591,28 @@ module.exports = {
   updateHotelStatus,
   addHotelTransaction,
   updateHotelTransaction,
-  getLocations,
+  addHotelRoom,
+  updateHotelRoom,
+  getAllLocationsButOnlineCities,
+  getFullLocationReport,
   addLocationTransaction,
   deleteLocationTransaction,
   updateCityStatus,
   getPaginatedCityDirectory,
   getCityCount,
-  addHotelRoom,
-  updateHotelRoom,
-  getGlobalDishes,
+  getHotelMeals,
+  addHotelMeal,
+  deleteHotelMeal,
+  getRoomMeals,
+  addRoomMeal,
+  deleteRoomMeal,
+  getPaginatedStaff,
+  getStaffCount,
+  getFullGlobalDishReport,
+  getActiveGlobalDishes,
   addGlobalDish,
   deleteGlobalDish,
   updateDishStatus,
   getPaginatedGlobalDishes,
   getGlobalDishesCount,
-  getPaginatedStaff,
-  getStaffCount,
 };
