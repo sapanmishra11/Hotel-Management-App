@@ -163,6 +163,12 @@ router.put(
   hotelController.updateHotel,
 );
 
+router.patch(
+  "/staff/:id/status",
+  authorize("hotels"),
+  hotelController.toggleStaffStatus,
+);
+
 router.get("/staff/:id", authorize("hotels"), hotelController.fetchStaffById);
 
 router.put(

@@ -1,0 +1,305 @@
+.admin-container {
+  padding: 2rem;
+
+  .table-wrapper {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      .title-section {
+        h2 {
+          margin: 0;
+          color: #1f2937;
+          font-size: 1.5rem;
+        }
+        p {
+          margin: 0.25rem 0 0;
+          color: #6b7280;
+          font-size: 0.875rem;
+        }
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+
+        .excel-btn {
+          background-color: #10b981 !important;
+        }
+
+        .pdf-btn {
+          background-color: #ef4444 !important;
+        }
+
+        .add-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 0.5rem 1rem;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: opacity 0.2s;
+
+          &:hover {
+            opacity: 0.9;
+          }
+
+          &:not(.excel-btn):not(.pdf-btn) {
+            background-color: #003580;
+          }
+        }
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      th {
+        background-color: #f9fafb;
+        color: #4b5563;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+
+        &.id-col {
+          width: 60px;
+        }
+      }
+
+      .font-mono {
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+
+      .staff-name {
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .email-text {
+        font-size: 0.85rem;
+        color: #4b5563;
+      }
+
+      .muted {
+        color: #9ca3af;
+        font-style: italic;
+      }
+
+      .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+
+        &.online {
+          background-color: #d1fae5;
+          color: #065f46;
+        }
+
+        &.offline {
+          background-color: #f3f4f6;
+          color: #374151;
+        }
+      }
+
+      .account-status-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .status-dot {
+          height: 8px;
+          width: 8px;
+          border-radius: 50%;
+
+          &.active {
+            background-color: #16a34a;
+          }
+          &.banned {
+            background-color: #dc2626;
+          }
+        }
+
+        .status-text {
+          font-size: 0.9rem;
+          color: #374151;
+        }
+      }
+
+      .action-cell {
+        .action-group {
+          display: flex;
+          gap: 8px;
+          justify-content: center;
+
+          .edit-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+              background-color: #f9fafb;
+            }
+          }
+
+          .toggle-status-btn {
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+
+            &:active {
+              transform: scale(0.95);
+            }
+
+            &.banned-style {
+              background-color: #fee2e2;
+              color: #dc2626;
+            }
+
+            &.active-style {
+              background-color: #dcfce7;
+              color: #16a34a;
+            }
+          }
+        }
+      }
+    }
+
+    .pagination-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-top: 1px solid #f3f4f6;
+
+      .entries-info {
+        font-size: 0.875rem;
+        color: #6b7280;
+        span {
+          font-weight: 600;
+          color: #111827;
+        }
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: 5px;
+
+        button {
+          padding: 0.5rem 0.75rem;
+          border: 1px solid #d1d5db;
+          background: white;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.875rem;
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+          &:hover:not(:disabled) {
+            background-color: #f9fafb;
+          }
+          &.active {
+            background-color: #003580;
+            color: white;
+            border-color: #003580;
+          }
+        }
+      }
+    }
+  }
+}
+
+.confirm-toast-container {
+  padding: 8px;
+  font-family: inherit;
+
+  .confirm-title {
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.02em;
+  }
+
+  .confirm-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+
+    button {
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+
+    .confirm-yes {
+      background-color: #003580;
+      color: #ffffff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        background-color: #002a66;
+        box-shadow: 0 4px 6px -1px rgba(0, 53, 128, 0.2);
+      }
+    }
+
+    .confirm-cancel {
+      background-color: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+
+      &:hover {
+        background-color: #e5e7eb;
+        color: #111827;
+      }
+    }
+  }
+}

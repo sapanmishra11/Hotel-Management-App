@@ -23,6 +23,16 @@ API.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (
+      error.response?.status === 403 &&
+      (error.response.data === "Account deactivated. Access denied." ||
+        error.response.data?.isDeactivated)
+    ) {
+      localStorage.clear();
+      window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 

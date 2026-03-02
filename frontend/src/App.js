@@ -40,7 +40,14 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 function App() {
   return (
     <Router>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
       <Navbar />
       <div className="App">
         <Routes>

@@ -194,11 +194,20 @@ const getMe = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = await authModel.findUserByEmail(email);
 
     if (!user) return res.status(401).json("Invalid Credentials");
-    if (!user.password_hash)
+
+    if (user.is_active === false) {
+      return res
+        .status(403)
+        .json("Your account has been deactivated. Please contact an admin.");
+    }
+
+    if (!user.password_hash) {
       return res.status(401).json("Set password via email link first.");
+    }
 
     const validPassword = await bcrypt.compare(password, user.password_hash);
     if (!validPassword) return res.status(401).json("Invalid Credentials");
@@ -221,7 +230,7 @@ const login = async (req, res) => {
       allowedPages,
     });
   } catch (err) {
-    console.error(err.message);
+    console.error("Login Error:", err.message);
     res.status(500).json("Server Error");
   }
 };
@@ -232,9 +241,15 @@ const refreshToken = async (req, res) => {
     if (!token) return res.status(401).json("No token provided");
 
     const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
     const user = await authModel.findUserById(payload.id);
 
     if (!user) return res.status(403).json("User not found");
+
+    if (user.is_active === false) {
+      res.clearCookie("refreshToken");
+      return res.status(403).json("Account deactivated. Logging out.");
+    }
 
     const newAccessToken = jwt.sign(
       { id: user.id, role: user.user_type },
@@ -341,16 +356,16 @@ const getUserProfile = async (req, res) => {
 };
 
 module.exports = {
-  register,
-  addStaff,
-  getStaffList,
-  updateStaff,
-  deleteStaff,
-  setPassword,
-  getMe,
   login,
   refreshToken,
   logout,
-  updateAccount,
+  register,
+  setPassword,
+  getMe,
   getUserProfile,
+  updateAccount,
+  getStaffList,
+  addStaff,
+  updateStaff,
+  deleteStaff,
 };

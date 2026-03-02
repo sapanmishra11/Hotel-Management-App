@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Edit } from "lucide-react";
+import { Plus, Edit, UserX, UserCheck } from "lucide-react";
 import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import API from "../../../api/axios";
+import "./AdminStaff.scss";
 
 const AdminStaff = () => {
   const navigate = useNavigate();
@@ -56,6 +57,59 @@ const AdminStaff = () => {
     }
   };
 
+  const handleToggleStatus = async (staffId, currentStatus) => {
+    const action = currentStatus ? "deactivate" : "activate";
+
+    const confirmToast = toast(
+      <div className="confirm-toast-container">
+        <p className="confirm-title">
+          Confirm {action === "activate" ? "Activation" : "Deactivation"}?
+        </p>
+        <div className="confirm-buttons">
+          <button
+            className="confirm-yes"
+            onClick={async () => {
+              toast.dismiss(confirmToast);
+              try {
+                const res = await API.patch(
+                  `api/hotels/staff/${staffId}/status`,
+                  {
+                    is_active: !currentStatus,
+                  },
+                );
+
+                if (res.data.success) {
+                  toast.success(`Staff member ${action}d successfully`);
+                  setStaffList((prev) =>
+                    prev.map((s) =>
+                      s.id === staffId
+                        ? { ...s, is_active: !currentStatus }
+                        : s,
+                    ),
+                  );
+                }
+              } catch (err) {
+                console.error("Status Update Error:", err);
+                toast.error(
+                  err.response?.data?.message || "Failed to update status",
+                );
+              }
+            }}
+          >
+            Yes
+          </button>
+          <button
+            className="confirm-cancel"
+            onClick={() => toast.dismiss(confirmToast)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>,
+      { autoClose: false, closeButton: false },
+    );
+  };
+
   const handlePageClick = (pageNum) => {
     navigate(`${location.pathname}?page=${pageNum}`);
   };
@@ -67,7 +121,9 @@ const AdminStaff = () => {
       Email: s.email,
       Mobile_Number: s.phone,
       Assigned_Hotel: s.hotel_name || "Unassigned",
-      Status: s.status || "pending",
+      Verification:
+        s.status === "active" ? "Email Verified" : "Email Unverified",
+      Account_Status: s.is_active ? "Active" : "Banned",
     }));
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
@@ -81,14 +137,21 @@ const AdminStaff = () => {
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text(`Staff Directory Report - Page ${pagination.currentPage}`, 14, 15);
-    const tableColumn = ["ID", "Name", "Email", "Phone", "Hotel", "Status"];
+    const tableColumn = [
+      "ID",
+      "Name",
+      "Email",
+      "Hotel",
+      "Verification",
+      "Account",
+    ];
     const tableRows = staffList.map((s) => [
       s.id,
       s.username,
       s.email,
-      s.phone,
       s.hotel_name || "Unassigned",
-      s.status || "pending",
+      s.status === "active" ? "Email Verified" : "Email Unverified",
+      s.is_active ? "Active" : "Banned",
     ]);
     autoTable(doc, { head: [tableColumn], body: tableRows, startY: 20 });
     doc.save(`Staff_Report_Page_${pagination.currentPage}.pdf`);
@@ -97,40 +160,21 @@ const AdminStaff = () => {
   return (
     <div className="admin-container">
       <div className="table-wrapper boxed-layout">
-        <div className="table-header" style={{ flexWrap: "wrap", gap: "1rem" }}>
+        <div className="table-header">
           <div className="title-section">
             <h2>Staff Management</h2>
-            <p>Manage access for hotel personnel (Server-side)</p>
+            <p>Manage access and verify personnel profiles</p>
           </div>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <button
-              onClick={downloadExcel}
-              className="add-btn"
-              style={{
-                backgroundColor: "#10b981",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
+          <div className="header-actions">
+            <button onClick={downloadExcel} className="add-btn excel-btn">
               <FaFileExcel size={16} /> Excel
             </button>
-            <button
-              onClick={downloadPDF}
-              className="add-btn"
-              style={{
-                backgroundColor: "#ef4444",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
+            <button onClick={downloadPDF} className="add-btn pdf-btn">
               <FaFilePdf size={16} /> PDF
             </button>
             <button
               onClick={() => navigate(`${basePath}/staff/add`)}
               className="add-btn"
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
             >
               <Plus size={16} /> Add Staff
             </button>
@@ -140,12 +184,12 @@ const AdminStaff = () => {
         <table>
           <thead>
             <tr>
-              <th style={{ width: "60px" }}>ID</th>
+              <th className="id-col">ID</th>
               <th>Full Name</th>
               <th>Email Address</th>
-              <th>Mobile Number</th>
               <th>Assigned Hotel</th>
-              <th>Verification Status</th>
+              <th>Email Verification</th>
+              <th>Account Status</th>
               <th className="text-center">Actions</th>
             </tr>
           </thead>
@@ -165,14 +209,11 @@ const AdminStaff = () => {
             ) : (
               staffList.map((s) => (
                 <tr key={s.id}>
-                  <td className="font-mono" style={{ fontSize: "0.85rem" }}>
-                    #{s.id}
-                  </td>
+                  <td className="font-mono">#{s.id}</td>
                   <td>
-                    <span style={{ fontWeight: 600 }}>{s.username}</span>
+                    <span className="staff-name">{s.username}</span>
                   </td>
-                  <td style={{ fontSize: "0.85rem" }}>{s.email}</td>
-                  <td style={{ fontSize: "0.85rem" }}>{s.phone}</td>
+                  <td className="email-text">{s.email}</td>
                   <td>
                     {s.hotel_name || (
                       <span className="muted">Not Assigned</span>
@@ -182,8 +223,20 @@ const AdminStaff = () => {
                     <span
                       className={`status-badge ${s.status === "active" ? "online" : "offline"}`}
                     >
-                      {s.status || "pending"}
+                      {s.status === "active"
+                        ? "Email Verified"
+                        : "Email Unverified"}
                     </span>
+                  </td>
+                  <td>
+                    <div className="account-status-cell">
+                      <span
+                        className={`status-dot ${s.is_active ? "active" : "banned"}`}
+                      ></span>
+                      <span className="status-text">
+                        {s.is_active ? "Active" : "Banned"}
+                      </span>
+                    </div>
                   </td>
                   <td className="action-cell">
                     <div className="action-group">
@@ -194,9 +247,18 @@ const AdminStaff = () => {
                           })
                         }
                         className="edit-btn"
-                        title="Edit Details"
                       >
-                        <Edit size={16} /> Edit
+                        <Edit size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleToggleStatus(s.id, s.is_active)}
+                        className={`toggle-status-btn ${s.is_active ? "banned-style" : "active-style"}`}
+                      >
+                        {s.is_active ? (
+                          <UserX size={16} />
+                        ) : (
+                          <UserCheck size={16} />
+                        )}
                       </button>
                     </div>
                   </td>

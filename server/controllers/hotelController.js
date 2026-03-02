@@ -621,6 +621,33 @@ const fetchGlobalDishesPaginated = async (req, res) => {
   }
 };
 
+const fetchStaffPaginated = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const [staff, totalCount] = await Promise.all([
+      hotelModel.getPaginatedStaff(limit, offset),
+      hotelModel.getStaffCount(),
+    ]);
+
+    res.json({
+      success: true,
+      staff: staff,
+      pagination: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit: limit,
+      },
+    });
+  } catch (err) {
+    console.error("Fetch Staff Error:", err.message);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
 const fetchStaffById = async (req, res) => {
   try {
     const staff = await hotelModel.getStaffById(req.params.id);
@@ -646,29 +673,26 @@ const updateStaff = async (req, res) => {
   }
 };
 
-const fetchStaffPaginated = async (req, res) => {
+const toggleStaffStatus = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = (page - 1) * limit;
+    const { id } = req.params;
+    const { is_active } = req.body;
 
-    const [staff, totalCount] = await Promise.all([
-      hotelModel.getPaginatedStaff(limit, offset),
-      hotelModel.getStaffCount(),
-    ]);
+    const updatedUser = await hotelModel.updateUserActiveStatus(id, is_active);
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Staff member not found" });
+    }
 
     res.json({
       success: true,
-      staff: staff,
-      pagination: {
-        totalItems: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        currentPage: page,
-        limit: limit,
-      },
+      message: `Staff member ${is_active ? "activated" : "deactivated"} successfully`,
+      user: updatedUser,
     });
   } catch (err) {
-    console.error("Fetch Staff Error:", err.message);
+    console.error("Toggle Status Error:", err.message);
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
@@ -701,6 +725,7 @@ module.exports = {
   fetchStaffPaginated,
   fetchStaffById,
   updateStaff,
+  toggleStaffStatus,
   getGlobalDishReport,
   fetchGlobalDishes,
   toggleGlobalDishStatus,

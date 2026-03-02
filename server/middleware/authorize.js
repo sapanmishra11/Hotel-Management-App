@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const PermissionModel = require("../models/permissionModel");
+const authModel = require("../models/authModel");
 
 module.exports = (requiredPermission) => {
   return async (req, res, next) => {
@@ -18,6 +19,15 @@ module.exports = (requiredPermission) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       req.user = decoded;
+
+      const user = await authModel.findUserById(req.user.id);
+
+      if (!user || user.is_active === false) {
+        return res.status(403).json({
+          message: "Account deactivated. Access denied.",
+          isDeactivated: true,
+        });
+      }
 
       if (requiredPermission) {
         const hasPermission = await PermissionModel.checkUserPermission(

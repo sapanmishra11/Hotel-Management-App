@@ -621,7 +621,8 @@ const getGlobalDishesCount = async () => {
 
 const getPaginatedStaff = async (limit, offset) => {
   const query = `
-    SELECT u.id, u.username, u.email, u.phone, u.assigned_hotel_id, h.hotel_name 
+    SELECT u.id, u.username, u.email, u.phone, u.assigned_hotel_id, 
+           u.status, u.is_active, h.hotel_name 
     FROM users u
     LEFT JOIN hotels h ON u.assigned_hotel_id = h.id
     WHERE u.user_type = 'Staff' 
@@ -637,6 +638,17 @@ const getStaffCount = async () => {
     "SELECT COUNT(*) FROM users WHERE user_type = 'Staff'",
   );
   return parseInt(result.rows[0].count);
+};
+
+const updateUserActiveStatus = async (id, is_active) => {
+  const query = `
+    UPDATE users 
+    SET is_active = $1 
+    WHERE id = $2 
+    RETURNING id, username, is_active;
+  `;
+  const result = await pool.query(query, [is_active, id]);
+  return result.rows[0];
 };
 
 module.exports = {
@@ -669,6 +681,7 @@ module.exports = {
   deleteRoomMeal,
   getPaginatedStaff,
   getStaffCount,
+  updateUserActiveStatus,
   getFullGlobalDishReport,
   getActiveGlobalDishes,
   addGlobalDish,

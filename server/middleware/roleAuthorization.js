@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
+const authModel = require("../models/authModel");
 
 module.exports = (requiredRoles) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const authHeader = req.header("Authorization");
 
     if (!authHeader) {
@@ -19,8 +20,16 @@ module.exports = (requiredRoles) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-
       req.user = decoded;
+
+      const user = await authModel.findUserById(req.user.id);
+
+      if (!user || user.is_active === false) {
+        return res.status(403).json({
+          message: "Account deactivated. Access denied.",
+          isDeactivated: true,
+        });
+      }
 
       if (requiredRoles) {
         const rolesArray = Array.isArray(requiredRoles)
