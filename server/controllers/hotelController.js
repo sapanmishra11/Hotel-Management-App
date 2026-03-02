@@ -160,19 +160,33 @@ const updateHotel = async (req, res) => {
       original_base_price,
       description,
       amenities,
+      state,
+      city,
       existingImages,
+      rooms,
+      meals,
     } = req.body;
+
     const parsedAmenities =
       typeof amenities === "string" ? JSON.parse(amenities) : amenities;
     const keptImages = JSON.parse(existingImages || "[]");
+
+    const parsedRooms =
+      typeof rooms === "string" ? JSON.parse(rooms) : rooms || [];
+    const parsedMeals =
+      typeof meals === "string" ? JSON.parse(meals) : meals || [];
 
     const updateData = {
       hotel_name,
       base_price,
       original_base_price,
       description,
+      state,
+      city,
       amenities: parsedAmenities,
       keptImages,
+      rooms: parsedRooms,
+      meals: parsedMeals,
     };
 
     await hotelModel.updateHotelTransaction(
@@ -180,10 +194,13 @@ const updateHotel = async (req, res) => {
       updateData,
       req.files,
     );
-    res.json({ message: "Hotel updated successfully" });
+
+    res.json({ message: "Hotel, Rooms, and Meals updated successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json("Server Error during update");
+    console.error("Update Controller Error:", err);
+    res
+      .status(500)
+      .json({ error: "Server Error during update", details: err.message });
   }
 };
 

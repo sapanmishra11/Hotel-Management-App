@@ -141,9 +141,12 @@ const EditHotel = () => {
     formData.append("existingImages", JSON.stringify(existingImages));
     newEditFiles.forEach((file) => formData.append("images", file));
 
+    formData.append("rooms", JSON.stringify(rooms));
+    formData.append("meals", JSON.stringify(hotelMeals));
+
     try {
       await API.put(`api/hotels/update/${id}`, formData);
-      toast.success("Hotel updated!");
+      toast.success("Hotel updated successfully!");
       navigate("/admin/hotels");
     } catch (err) {
       toast.error("Update failed");
@@ -152,143 +155,62 @@ const EditHotel = () => {
     }
   };
 
-  const handleAddRoomTypeToExisting = async () => {
+  const handleAddRoomTypeToExisting = () => {
     if (!roomData.type || !roomData.price)
       return toast.warn("Type and Offer Price required");
-    setIsProcessing(true);
-    const formData = new FormData();
-    formData.append("hotel_id", id);
-    formData.append("room_type", roomData.type);
-    formData.append("price_per_night", roomData.price);
-    formData.append("original_price", roomData.original_price);
-    formData.append("available_rooms", roomData.available_rooms);
-    formData.append("room_description", roomData.desc);
-    roomFiles.forEach((file) => formData.append("roomImages", file));
 
-    try {
-      await API.post("api/hotels/rooms/add", formData);
-      toast.success("Room category added!");
-      setRoomData({
-        type: "",
-        price: "",
-        original_price: "",
-        available_rooms: 1,
-        desc: "",
-      });
-      setRoomFiles([]);
-      const res = await API.get("api/hotels/all");
-      const h = res.data.find((h) => h.id.toString() === id.toString());
-      if (h) setRooms(h.rooms || []);
-    } catch (err) {
-      toast.error("Error adding room");
-    } finally {
-      setIsProcessing(false);
-    }
+    const newRoom = {
+      id: `temp-${Date.now()}`,
+      room_type: roomData.type,
+      price_per_night: roomData.price,
+      original_price: roomData.original_price,
+      available_rooms: roomData.available_rooms,
+      room_description: roomData.desc,
+      isNew: true,
+    };
+
+    setRooms([...rooms, newRoom]);
+    setRoomData({
+      type: "",
+      price: "",
+      original_price: "",
+      available_rooms: 1,
+      desc: "",
+    });
+    setRoomFiles([]);
   };
 
-  const handleUpdateExistingRoom = async () => {
-    setIsProcessing(true);
-    const formData = new FormData();
-    formData.append("room_type", editingRoom.room_type);
-    formData.append("price_per_night", editingRoom.price_per_night);
-    formData.append("original_price", editingRoom.original_price || "");
-    formData.append("available_rooms", editingRoom.available_rooms);
-    formData.append("room_description", editingRoom.room_description || "");
-    formData.append(
-      "existingImages",
-      JSON.stringify(editingRoom.room_images || []),
+  const handleUpdateExistingRoom = () => {
+    const updatedRooms = rooms.map((r) =>
+      r.id === editingRoom.id ? { ...editingRoom, isUpdated: true } : r,
     );
-    roomFiles.forEach((file) => formData.append("roomImages", file));
-
-    try {
-      await API.put(`api/hotels/rooms/update/${editingRoom.id}`, formData);
-      toast.success("Room updated!");
-      setEditingRoom(null);
-      setRoomFiles([]);
-      const res = await API.get("api/hotels/all");
-      const h = res.data.find((h) => h.id.toString() === id.toString());
-      if (h) setRooms(h.rooms || []);
-    } catch (err) {
-      toast.error("Update failed");
-    } finally {
-      setIsProcessing(false);
-    }
+    setRooms(updatedRooms);
+    setEditingRoom(null);
   };
 
   const handleDeleteRoom = (roomId) => {
-    const confirmToastId = toast.warn(
-      <div>
-        <p>Delete this room category entirely?</p>
-        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-          <button
-            onClick={async () => {
-              toast.dismiss(confirmToastId);
-              try {
-                await API.delete(`api/hotels/rooms/${roomId}`);
-                toast.success("Room category deleted");
-                setRooms(rooms.filter((r) => r.id !== roomId));
-              } catch (err) {
-                toast.error("Failed to delete room");
-              }
-            }}
-            style={{
-              padding: "5px 10px",
-              background: "#dc3545",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Confirm
-          </button>
-          <button
-            onClick={() => toast.dismiss(confirmToastId)}
-            style={{
-              padding: "5px 10px",
-              background: "#ccc",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>,
-      { autoClose: false, closeOnClick: false },
-    );
+    setRooms(rooms.filter((r) => r.id !== roomId));
   };
 
-  const handleAddDish = async () => {
+  const handleAddDish = () => {
     if (!newDish.name || !newDish.price)
       return toast.warn("Select a dish and enter a price first");
-    setIsProcessing(true);
-    try {
-      await API.post(`api/hotels/meals/${id}`, {
-        category: newDish.category,
-        type: newDish.type,
-        name: newDish.name,
-        price: newDish.price,
-      });
-      toast.success(`${newDish.name} added successfully`);
-      setNewDish({ ...newDish, name: "", price: "" });
-      fetchHotelMeals(id);
-    } catch (err) {
-      toast.error("Failed to add dish");
-    } finally {
-      setIsProcessing(false);
-    }
+
+    const newMeal = {
+      id: `temp-${Date.now()}`,
+      dish_name: newDish.name,
+      meal_category: newDish.category,
+      dietary_type: newDish.type,
+      price: newDish.price,
+      isNew: true,
+    };
+
+    setHotelMeals([...hotelMeals, newMeal]);
+    setNewDish({ ...newDish, name: "", price: "" });
   };
 
-  const handleDeleteDish = async (dishId) => {
-    try {
-      await API.delete(`api/hotels/meals/item/${dishId}`);
-      toast.success("Dish removed from hotel");
-      fetchHotelMeals(id);
-    } catch (err) {
-      toast.error("Failed to remove dish");
-    }
+  const handleDeleteDish = (dishId) => {
+    setHotelMeals(hotelMeals.filter((m) => m.id !== dishId));
   };
 
   return (
@@ -304,8 +226,8 @@ const EditHotel = () => {
           <div className="title-section">
             <h2>Editing: {hotelData.hotel_name || "Loading..."}</h2>
             <p>
-              Modify basic details, adjust inventory availability, and update
-              meal pricing.
+              Modify details, rooms, and meals. Changes apply only when you
+              click Save.
             </p>
           </div>
           <button
@@ -461,7 +383,7 @@ const EditHotel = () => {
 
           <div className="form-card">
             <h4 className="section-title">
-              <Bed size={14} /> 3. Room Inventory (Live Update)
+              <Bed size={14} /> 3. Room Inventory (Staged Changes)
             </h4>
 
             <div className={`staging-form ${editingRoom ? "is-editing" : ""}`}>
@@ -570,34 +492,19 @@ const EditHotel = () => {
                     }
                   />
                 </div>
-                <div className="input-field full-width">
-                  <label>Room Images</label>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) =>
-                      setRoomFiles([...Array.from(e.target.files)])
-                    }
-                  />
-                </div>
               </div>
 
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   type="button"
                   className={`btn-stage ${editingRoom ? "btn-warning" : ""}`}
-                  disabled={isProcessing}
                   onClick={
                     editingRoom
                       ? handleUpdateExistingRoom
                       : handleAddRoomTypeToExisting
                   }
                 >
-                  {isProcessing
-                    ? "Processing..."
-                    : editingRoom
-                      ? "Save Room Changes"
-                      : "Add Category to Live"}
+                  {editingRoom ? "Add Room Changes to List" : "Add to List"}
                 </button>
                 {editingRoom && (
                   <button
@@ -636,7 +543,7 @@ const EditHotel = () => {
                           className="edit-btn-small"
                           onClick={() => setEditingRoom(room)}
                         >
-                          <Edit size={14} /> Edit
+                          <Edit size={14} />
                         </button>
                         <Trash2
                           size={16}
@@ -653,7 +560,7 @@ const EditHotel = () => {
 
           <div className="form-card">
             <h4 className="section-title">
-              <Utensils size={14} /> 4. Meal Menu (Live Update)
+              <Utensils size={14} /> 4. Meal Menu (Staged Changes)
             </h4>
             <div className="staging-form">
               <div className="form-grid">
@@ -713,9 +620,8 @@ const EditHotel = () => {
                 type="button"
                 className="btn-stage"
                 onClick={handleAddDish}
-                disabled={isProcessing}
               >
-                <Plus size={14} /> Add Live to Menu
+                <Plus size={14} /> Add to List
               </button>
             </div>
 
@@ -748,7 +654,7 @@ const EditHotel = () => {
                       <Trash2
                         size={14}
                         className="del-icon"
-                        onClick={() => !isProcessing && handleDeleteDish(m.id)}
+                        onClick={() => handleDeleteDish(m.id)}
                       />
                     </td>
                   </tr>

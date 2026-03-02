@@ -31,6 +31,7 @@ router.post(
   ]),
   hotelController.createHotel,
 );
+
 router.get("/search", hotelController.searchHotels);
 router.get("/online", hotelController.fetchOnlineHotels);
 router.get("/all", authorize("hotels"), hotelController.fetchAllHotels);
@@ -43,12 +44,12 @@ router.get(
 
 router.get("/hotelreport", authorize("hotels"), hotelController.getHotelReport);
 
-router.post(
-  "/rooms/add",
-  authorize("hotels"),
-  upload.array("roomImages", 10),
-  hotelController.createHotelRoom,
-);
+// router.post(
+//   "/rooms/add",
+//   authorize("hotels"),
+//   upload.array("roomImages", 10),
+//   hotelController.createHotelRoom,
+// );
 
 router.get(
   "/locations/paginated",
@@ -112,12 +113,12 @@ router.patch(
   hotelController.toggleCityStatus,
 );
 
-router.put(
-  "/rooms/update/:roomId",
-  authorize("hotels"),
-  upload.array("roomImages", 10),
-  hotelController.updateHotelRoom,
-);
+// router.put(
+//   "/rooms/update/:roomId",
+//   authorize("hotels"),
+//   upload.array("roomImages", 10),
+//   hotelController.updateHotelRoom,
+// );
 
 router.delete(
   "/rooms/meals/:dishId",
@@ -127,11 +128,11 @@ router.delete(
 
 router.get("/rooms/meals/:roomId", hotelController.fetchRoomMeals);
 
-router.delete(
-  "/meals/item/:dishId",
-  authorize("hotels"),
-  hotelController.removeHotelMeal,
-);
+// router.delete(
+//   "/meals/item/:dishId",
+//   authorize("hotels"),
+//   hotelController.removeHotelMeal,
+// );
 
 router.patch(
   "/global-dishes/status/:id",
@@ -143,11 +144,11 @@ router.patch("/status/:id", authorize("hotels"), hotelController.updateStatus);
 
 router.get("/meals/:hotelId", hotelController.fetchHotelMeals);
 
-router.post(
-  "/meals/:hotelId",
-  authorize("hotels"),
-  hotelController.createHotelMeal,
-);
+// router.post(
+//   "/meals/:hotelId",
+//   authorize("hotels"),
+//   hotelController.createHotelMeal,
+// );
 
 router.delete(
   "/global-dishes/:type/:name",

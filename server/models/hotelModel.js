@@ -24,7 +24,6 @@ const addHotelTransaction = async (hotelData) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
     const {
       hotel_name,
       city,
@@ -38,7 +37,7 @@ const addHotelTransaction = async (hotelData) => {
     } = hotelData;
 
     const hotelResult = await client.query(
-      `INSERT INTO hotels (hotel_name, city, state, description, base_price, original_base_price, amenities, availability_status)  
+      `INSERT INTO hotels (hotel_name, city, state, description, base_price, original_base_price, amenities, availability_status)   
        VALUES ($1, $2, $3, $4, $5, $6, $7, 'offline') RETURNING id`,
       [
         hotel_name,
@@ -51,6 +50,23 @@ const addHotelTransaction = async (hotelData) => {
       ],
     );
     const hotelId = hotelResult.rows[0].id;
+
+    if (roomsMetadata && Array.isArray(roomsMetadata)) {
+      for (const room of roomsMetadata) {
+        await client.query(
+          `INSERT INTO hotel_rooms (hotel_id, room_type, price_per_night, original_price, room_description, available_rooms) 
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [
+            hotelId,
+            room.room_type,
+            room.price_per_night,
+            room.original_price || null,
+            room.room_description || "",
+            room.available_rooms || 1,
+          ],
+        );
+      }
+    }
 
     if (meals && Array.isArray(meals)) {
       for (const meal of meals) {
@@ -185,23 +201,33 @@ const updateHotelTransaction = async (id, updateData, files) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+
     const {
       hotel_name,
       base_price,
       original_base_price,
       description,
+      state,
+      city,
       amenities,
       keptImages,
+      rooms,
+      meals,
     } = updateData;
 
     await client.query(
-      `UPDATE hotels SET hotel_name = $1, base_price = $2, original_base_price = $3, description = $4, amenities = $5 WHERE id = $6`,
+      `UPDATE hotels 
+       SET hotel_name = $1, base_price = $2, original_base_price = $3, 
+           description = $4, amenities = $5, state = $6, city = $7 
+       WHERE id = $8`,
       [
         hotel_name,
         base_price,
         original_base_price || null,
         description,
         amenities,
+        state,
+        city,
         id,
       ],
     );
@@ -216,6 +242,41 @@ const updateHotelTransaction = async (id, updateData, files) => {
         await client.query(
           "INSERT INTO hotel_images (hotel_id, image_url) VALUES ($1, $2)",
           [id, `/uploads/${file.filename}`],
+        );
+      }
+    }
+
+    await client.query("DELETE FROM hotel_meals WHERE hotel_id = $1", [id]);
+    if (meals && Array.isArray(meals)) {
+      for (const meal of meals) {
+        await client.query(
+          `INSERT INTO hotel_meals (hotel_id, meal_category, dietary_type, dish_name, price) 
+           VALUES ($1, $2, $3, $4, $5)`,
+          [
+            id,
+            meal.meal_category || meal.category,
+            meal.dietary_type || meal.type,
+            meal.dish_name || meal.name,
+            meal.price || 0,
+          ],
+        );
+      }
+    }
+
+    await client.query("DELETE FROM hotel_rooms WHERE hotel_id = $1", [id]);
+    if (rooms && Array.isArray(rooms)) {
+      for (const room of rooms) {
+        await client.query(
+          `INSERT INTO hotel_rooms (hotel_id, room_type, price_per_night, original_price, room_description, available_rooms) 
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [
+            id,
+            room.room_type,
+            room.price_per_night,
+            room.original_price || null,
+            room.room_description || "",
+            room.available_rooms || 1,
+          ],
         );
       }
     }
